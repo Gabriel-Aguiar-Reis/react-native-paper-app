@@ -1,10 +1,10 @@
 import { Surface, Text } from 'react-native-paper'
 import { styles } from '@/lib/ui'
 
-const Settings = () => (
+const Profile = () => (
   <Surface style={styles.screen}>
-    <Text>Hello Settings</Text>
+    <Text>Hello Clientes</Text>
   </Surface>
 )
 
-export default Settings
+export default Profile

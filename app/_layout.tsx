@@ -7,14 +7,12 @@ import {
   ThemeProvider
 } from '@react-navigation/native'
 import { useFonts } from 'expo-font'
-import * as Localization from 'expo-localization'
 import { SplashScreen, Stack } from 'expo-router'
 import * as SecureStore from 'expo-secure-store'
 import React from 'react'
 import { Platform, useColorScheme } from 'react-native'
 import { adaptNavigationTheme, PaperProvider } from 'react-native-paper'
 
-import Locales from '@/lib/locales'
 import { Setting } from '@/lib/types'
 import { StackHeader, Themes } from '@/lib/ui'
 export { ErrorBoundary } from 'expo-router'
@@ -51,8 +49,7 @@ const RootLayoutNav = () => {
   const colorScheme = useColorScheme()
   const [settings, setSettings] = React.useState<Setting>({
     theme: 'auto',
-    color: 'default',
-    language: 'auto'
+    color: 'default'
   })
 
   React.useEffect(() => {
@@ -68,14 +65,6 @@ const RootLayoutNav = () => {
       })
     } else {
       setSettings({ ...settings, theme: colorScheme ?? 'light' })
-    }
-  }, [])
-
-  React.useEffect(() => {
-    if (settings.language === 'auto') {
-      Locales.locale = Localization.getLocales()[0].languageCode ?? 'en'
-    } else {
-      Locales.locale = settings.language
     }
   }, [])
 
@@ -110,14 +99,7 @@ const RootLayoutNav = () => {
         >
           <Stack.Screen name="(auth)" options={{ headerShown: false }} />
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen
-            name="search"
-            options={{ title: Locales.t('search') }}
-          />
-          <Stack.Screen
-            name="modal"
-            options={{ title: Locales.t('titleModal'), presentation: 'modal' }}
-          />
+          <Stack.Screen name="search" options={{ title: 'Pesquisar' }} />
         </Stack>
       </PaperProvider>
     </ThemeProvider>

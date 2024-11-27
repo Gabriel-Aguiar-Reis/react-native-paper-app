@@ -12,7 +12,7 @@ const TabBar = (props: BottomTabBarProps) => (
       const event = props.navigation.emit({
         type: 'tabPress',
         target: route.key,
-        canPreventDefault: true,
+        canPreventDefault: true
       })
 
       if (event.defaultPrevented) {
@@ -20,7 +20,7 @@ const TabBar = (props: BottomTabBarProps) => (
       } else {
         props.navigation.dispatch({
           ...CommonActions.navigate(route.name, route.params),
-          target: props.state.key,
+          target: props.state.key
         })
       }
     }}

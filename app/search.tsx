@@ -1,14 +1,11 @@
 import React from 'react'
-import { Searchbar, Surface } from 'react-native-paper'
-
-import Locales from '@/lib/locales'
-import { ScreenInfo, styles } from '@/lib/ui'
+import { Searchbar, Surface, Text } from 'react-native-paper'
+import { styles } from '@/lib/ui'
 
 const Search = () => {
   const [query, setQuery] = React.useState('')
   const [loading, setLoading] = React.useState(false)
 
-  // Search logic
   React.useEffect(() => {
     if (query !== '') {
       setLoading(true)
@@ -25,12 +22,12 @@ const Search = () => {
         value={query}
         loading={loading}
         onChangeText={(v) => setQuery(v)}
-        placeholder="Type here to search..."
+        placeholder="Digite aqui para pesquisar..."
         style={{ marginTop: 16, marginHorizontal: 16 }}
       />
 
       <Surface style={styles.screen}>
-        <ScreenInfo title={Locales.t('search')} path="app/search.tsx" />
+        <Text>Hello Produtos</Text>
       </Surface>
     </Surface>
   )

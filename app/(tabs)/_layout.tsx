@@ -1,13 +1,48 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import { Tabs, router } from 'expo-router'
 import React from 'react'
-import { Appbar, Menu, Tooltip } from 'react-native-paper'
+import { Appbar, Tooltip } from 'react-native-paper'
 
-import Locales from '@/lib/locales'
 import { TabBar, TabsHeader } from '@/lib/ui'
 
 const TabLayout = () => {
-  const [visible, setVisible] = React.useState(false)
+  const tabs = [
+    {
+      key: 1,
+      name: 'index',
+      title: 'Tela Inicial',
+      iconFocused: 'home' as const,
+      iconUnfocused: 'home-outline' as const
+    },
+    {
+      key: 2,
+      name: 'costumers',
+      title: 'Clientes',
+      iconFocused: 'account-box-multiple' as const,
+      iconUnfocused: 'account-box-multiple-outline' as const
+    },
+    {
+      key: 3,
+      name: 'products',
+      title: 'Produtos',
+      iconFocused: 'basket' as const,
+      iconUnfocused: 'basket-outline' as const
+    },
+    {
+      key: 4,
+      name: 'invoices',
+      title: 'Ordens',
+      iconFocused: 'book' as const,
+      iconUnfocused: 'book-outline' as const
+    },
+    {
+      key: 5,
+      name: 'settings',
+      title: 'Configs',
+      iconFocused: 'cog' as const,
+      iconUnfocused: 'cog-outline' as const
+    }
+  ] as const
 
   return (
     <Tabs
@@ -17,77 +52,55 @@ const TabLayout = () => {
         header: (props) => <TabsHeader navProps={props} children={undefined} />
       }}
     >
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: Locales.t('titleHome'),
-          headerRight: () => (
-            <>
-              <Tooltip title={Locales.t('search')}>
-                <Appbar.Action
-                  icon="magnify"
-                  onPress={() => router.push('/search')}
+      {tabs.map((tab) =>
+        tab.name === 'settings' ? (
+          <Tabs.Screen
+            key={tab.key}
+            name={tab.name}
+            options={{
+              title: tab.title,
+              tabBarIcon: (props) => (
+                <MaterialCommunityIcons
+                  {...props}
+                  size={24}
+                  name={props.focused ? tab.iconFocused : tab.iconUnfocused}
                 />
-              </Tooltip>
-              <Tooltip title={Locales.t('titleSettings')}>
-                <Appbar.Action
-                  icon="cog"
-                  onPress={() => router.push('/(tabs)/settings')}
+              )
+            }}
+          />
+        ) : (
+          <Tabs.Screen
+            key={tab.key}
+            name={tab.name}
+            options={{
+              title: tab.title,
+              headerRight: () => (
+                <>
+                  <Tooltip title="Pesquisar">
+                    <Appbar.Action
+                      icon="magnify"
+                      onPress={() => router.push('/search')}
+                    />
+                  </Tooltip>
+                  <Tooltip title="Configs">
+                    <Appbar.Action
+                      icon="cog"
+                      onPress={() => router.push('/(tabs)/settings')}
+                    />
+                  </Tooltip>
+                </>
+              ),
+              tabBarIcon: (props) => (
+                <MaterialCommunityIcons
+                  {...props}
+                  size={24}
+                  name={props.focused ? tab.iconFocused : tab.iconUnfocused}
                 />
-              </Tooltip>
-            </>
-          ),
-          tabBarIcon: (props) => (
-            <MaterialCommunityIcons
-              {...props}
-              size={24}
-              name={props.focused ? 'home' : 'home-outline'}
-            />
-          )
-        }}
-      />
-      <Tabs.Screen
-        name="profile"
-        options={{
-          title: Locales.t('profile'),
-          headerRight: () => (
-            <>
-              <Tooltip title={Locales.t('search')}>
-                <Appbar.Action
-                  icon="magnify"
-                  onPress={() => router.push('/search')}
-                />
-              </Tooltip>
-              <Tooltip title={Locales.t('titleSettings')}>
-                <Appbar.Action
-                  icon="cog"
-                  onPress={() => router.push('/(tabs)/settings')}
-                />
-              </Tooltip>
-            </>
-          ),
-          tabBarIcon: (props) => (
-            <MaterialCommunityIcons
-              {...props}
-              size={24}
-              name={props.focused ? 'account' : 'account-outline'}
-            />
-          )
-        }}
-      />
-      <Tabs.Screen
-        name="settings"
-        options={{
-          title: Locales.t('titleSettings'),
-          tabBarIcon: (props) => (
-            <MaterialCommunityIcons
-              {...props}
-              size={24}
-              name={props.focused ? 'cog' : 'cog-outline'}
-            />
-          )
-        }}
-      />
+              )
+            }}
+          />
+        )
+      )}
     </Tabs>
   )
 }

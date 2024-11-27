@@ -1,10 +1,10 @@
 import { Surface, Text } from 'react-native-paper'
 import { styles } from '@/lib/ui'
 
-const Settings = () => (
+const Products = () => (
   <Surface style={styles.screen}>
-    <Text>Hello Settings</Text>
+    <Text>Hello Produtos</Text>
   </Surface>
 )
 
-export default Settings
+export default Products
