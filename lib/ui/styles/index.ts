@@ -13,8 +13,16 @@ const styles = StyleSheet.create({
     gap: 16,
     padding: 32,
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'center'
   },
+  orderModal: {
+    display: 'flex',
+    alignSelf: 'center',
+    padding: 20,
+    width: '80%',
+    borderRadius: 16,
+    justifyContent: 'center'
+  }
 })
 
 export { Colors, Themes, styles }
