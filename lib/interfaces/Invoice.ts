@@ -5,8 +5,8 @@ interface IInvoice {
   costumer: ICostumer
   products: IProduct[]
   totalValue: number
-  visitDate: Date
-  returnDate: Date
+  visitDate: string
+  returnDate: string
 }
 
 export default IInvoice
