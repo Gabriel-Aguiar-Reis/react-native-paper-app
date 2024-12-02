@@ -9,18 +9,18 @@ import Themes from '@/lib/ui/styles/themes'
 
 const styles = StyleSheet.create({
   screen: {
-    flex: 1,
-    gap: 16,
-    padding: 32,
+    flex: 1 as const,
+    gap: 16 as const,
+    padding: 32 as const,
     alignItems: 'center',
     justifyContent: 'center'
   },
   orderModal: {
     display: 'flex',
     alignSelf: 'center',
-    padding: 20,
+    padding: 20 as const,
     width: '80%',
-    borderRadius: 16,
+    borderRadius: 16 as const,
     justifyContent: 'center'
   }
 })
