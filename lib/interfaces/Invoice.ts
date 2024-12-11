@@ -3,7 +3,7 @@ import { ICostumer, IProduct } from '@/lib/interfaces'
 interface IInvoice {
   id: string
   costumer: ICostumer
-  products: IProduct[]
+  products: { product: IProduct; quantity: number }[]
   totalValue: number
   visitDate: string
   returnDate: string
