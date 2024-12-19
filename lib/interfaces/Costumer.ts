@@ -6,11 +6,11 @@ interface ICostumer {
     number: number
     neighbourhood: string
     city: string
-    CEP: number
+    CEP: string
   }
   contactData: {
     name: string
-    phone: number
+    phone: string
     isWhatsapp: boolean
   }
 }
