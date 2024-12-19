@@ -1,190 +1,69 @@
 import { IInvoice } from '@/lib/interfaces'
+import { fakerPT_BR as faker } from '@faker-js/faker'
 
-const mockInvoices: IInvoice[] = [
-  {
-    id: '1',
-    costumer: {
-      id: '1costumer',
-      name: 'JPeças',
-      contactData: { name: 'joão', phone: 12988998899, isWhatsapp: true },
-      locationData: {
-        street: 'Rua Savério Mario Ardito',
-        number: 30,
-        neighbourhood: 'Parque São Cristóvão',
-        city: 'Taubaté',
-        CEP: 12012345
-      }
-    },
-    products: [
-      {
-        product: {
-          id: '1p',
-          name: 'product1',
-          price: 10,
-          validityMonths: 6,
-          category: {
-            id: '1',
-            name: 'extintor'
-          }
-        },
-        quantity: 2
-      },
-      {
-        product: {
-          id: '2p',
-          name: 'product2',
-          price: 10,
-          validityMonths: 12,
-          category: {
-            id: '1',
-            name: 'extintor'
-          }
-        },
-        quantity: 3
-      }
-    ],
-    totalValue: 60,
-    visitDate: '24/10/2024',
-    returnDate: '01/11/2025'
+const generateProduct = (): IInvoice['products'][0] => ({
+  product: {
+    id: faker.database.mongodbObjectId(),
+    name: faker.commerce.productName(),
+    price: Number(faker.commerce.price({ max: 500 })),
+    validityMonths: faker.number.int({ min: 6, max: 24, multipleOf: 6 }),
+    category: {
+      id: faker.database.mongodbObjectId(),
+      name: faker.commerce.productMaterial()
+    }
   },
-  {
-    id: '2',
+  quantity: faker.number.int({ min: 1, max: 5 })
+})
+
+const generateInvoice = (): IInvoice => {
+  const visitDate = faker.date.past()
+  const numProducts = faker.number.int({ max: 5 })
+  const products = Array.from({ length: numProducts }, generateProduct)
+
+  const minValidityMonths = Math.min(
+    ...products.map((p) => p.product.validityMonths)
+  )
+
+  const returnDate = new Date(
+    visitDate.getFullYear(),
+    visitDate.getMonth() + minValidityMonths - 1,
+    visitDate.getDate()
+  )
+
+  const totalValue = products.reduce(
+    (acc, p) => acc + p.product.price * p.quantity,
+    0
+  )
+
+  return {
+    id: faker.database.mongodbObjectId(),
     costumer: {
-      id: '1costumer',
-      name: 'JPeças',
-      contactData: { name: 'joão', phone: 12988998899, isWhatsapp: true },
+      id: faker.database.mongodbObjectId(),
+      name: faker.company.name(),
       locationData: {
-        street: 'rua 1',
-        number: 10,
-        neighbourhood: 'bairro 1',
-        city: 'cidade',
-        CEP: 12012345
+        street: faker.location.street(),
+        number: Number(faker.location.buildingNumber()),
+        neighbourhood: faker.location.county(),
+        city: faker.location.city(),
+        CEP: faker.location.zipCode()
+      },
+      contactData: {
+        name: faker.person.fullName(),
+        phone: faker.phone.number(),
+        isWhatsapp: faker.datatype.boolean()
       }
     },
-    products: [
-      {
-        product: {
-          id: '1p',
-          name: 'product1',
-          price: 10,
-          validityMonths: 6,
-          category: {
-            id: '1',
-            name: 'extintor'
-          }
-        },
-        quantity: 2
-      },
-      {
-        product: {
-          id: '2p',
-          name: 'product2',
-          price: 10,
-          validityMonths: 12,
-          category: {
-            id: '1',
-            name: 'extintor'
-          }
-        },
-        quantity: 3
-      }
-    ],
-    totalValue: 60,
-    visitDate: '24/10/2024',
-    returnDate: '01/11/2025'
-  },
-  {
-    id: '3',
-    costumer: {
-      id: '1costumer',
-      name: 'JPeças',
-      contactData: { name: 'joão', phone: 12988998899, isWhatsapp: true },
-      locationData: {
-        street: 'rua 1',
-        number: 10,
-        neighbourhood: 'bairro 1',
-        city: 'cidade',
-        CEP: 12012345
-      }
-    },
-    products: [
-      {
-        product: {
-          id: '1p',
-          name: 'product1',
-          price: 10,
-          validityMonths: 6,
-          category: {
-            id: '1',
-            name: 'extintor'
-          }
-        },
-        quantity: 2
-      },
-      {
-        product: {
-          id: '2p',
-          name: 'product2',
-          price: 10,
-          validityMonths: 12,
-          category: {
-            id: '1',
-            name: 'extintor'
-          }
-        },
-        quantity: 3
-      }
-    ],
-    totalValue: 60,
-    visitDate: '24/10/2024',
-    returnDate: '01/11/2025'
-  },
-  {
-    id: '4',
-    costumer: {
-      id: '1costumer',
-      name: 'JPeças',
-      contactData: { name: 'joão', phone: 12988998899, isWhatsapp: true },
-      locationData: {
-        street: 'Rua Geraldo Marcelino Bispo',
-        number: 300,
-        neighbourhood: 'bairro 1',
-        city: 'cidade',
-        CEP: 12012345
-      }
-    },
-    products: [
-      {
-        product: {
-          id: '1p',
-          name: 'product1',
-          price: 10,
-          validityMonths: 6,
-          category: {
-            id: '1',
-            name: 'extintor'
-          }
-        },
-        quantity: 2
-      },
-      {
-        product: {
-          id: '2p',
-          name: 'product2',
-          price: 10,
-          validityMonths: 12,
-          category: {
-            id: '1',
-            name: 'extintor'
-          }
-        },
-        quantity: 3
-      }
-    ],
-    totalValue: 60,
-    visitDate: '24/10/2024',
-    returnDate: '01/11/2025'
+    products,
+    totalValue,
+    visitDate,
+    returnDate
   }
-]
+}
+
+const generateInvoices = (num: number): IInvoice[] =>
+  Array.from({ length: num }, generateInvoice)
+
+const numInvoices = faker.number.int({ max: 15 })
+const mockInvoices = generateInvoices(numInvoices)
 
 export default mockInvoices
