@@ -7,6 +7,7 @@ interface IInvoice {
   totalValue: number
   visitDate: Date
   returnDate: Date
+  realized: boolean
 }
 
 export default IInvoice
