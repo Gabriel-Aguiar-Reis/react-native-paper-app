@@ -1,12 +1,12 @@
 import { IInvoice } from '@/lib/interfaces'
 import { fakerPT_BR as faker } from '@faker-js/faker'
 
-const generateProduct = (): IInvoice['products'][0] => ({
+const generateProduct = (validityMonths: number): IInvoice['products'][0] => ({
   product: {
     id: faker.database.mongodbObjectId(),
     name: faker.commerce.productName(),
     price: Number(faker.commerce.price({ max: 500 })),
-    validityMonths: faker.number.int({ min: 6, max: 24, multipleOf: 6 }),
+    validityMonths,
     category: {
       id: faker.database.mongodbObjectId(),
       name: faker.commerce.productMaterial()
@@ -17,16 +17,15 @@ const generateProduct = (): IInvoice['products'][0] => ({
 
 const generateInvoice = (): IInvoice => {
   const visitDate = faker.date.past()
-  const numProducts = faker.number.int({ max: 5 })
-  const products = Array.from({ length: numProducts }, generateProduct)
-
-  const minValidityMonths = Math.min(
-    ...products.map((p) => p.product.validityMonths)
+  const validityMonths = faker.number.int({ min: 6, max: 24, multipleOf: 6 })
+  const numProducts = faker.number.int({ min: 1, max: 5 })
+  const products = Array.from({ length: numProducts }, () =>
+    generateProduct(validityMonths)
   )
 
   const returnDate = new Date(
     visitDate.getFullYear(),
-    visitDate.getMonth() + minValidityMonths - 1,
+    visitDate.getMonth() + validityMonths - 1,
     visitDate.getDate()
   )
 
@@ -56,7 +55,8 @@ const generateInvoice = (): IInvoice => {
     products,
     totalValue,
     visitDate,
-    returnDate
+    returnDate,
+    realized: false
   }
 }
 
