@@ -8,13 +8,12 @@ import {
 } from '@react-navigation/native'
 import { useFonts } from 'expo-font'
 import { SplashScreen, Stack } from 'expo-router'
-import * as SecureStore from 'expo-secure-store'
 import React from 'react'
-import { Platform, useColorScheme } from 'react-native'
+import { useColorScheme } from 'react-native'
 import { adaptNavigationTheme, PaperProvider } from 'react-native-paper'
 
 import { Setting } from '@/lib/types'
-import { StackHeader, Themes } from '@/lib/ui'
+import { Themes } from '@/lib/ui'
 export { ErrorBoundary } from 'expo-router'
 
 export const unstable_settings = { initialRouteName: '(tabs)' }
@@ -49,23 +48,11 @@ const RootLayoutNav = () => {
   const colorScheme = useColorScheme()
   const [settings, setSettings] = React.useState<Setting>({
     theme: 'auto',
-    color: 'default'
+    color: 'blue'
   })
 
   React.useEffect(() => {
-    if (Platform.OS !== 'web') {
-      SecureStore.getItemAsync('settings').then((result) => {
-        if (result === null) {
-          SecureStore.setItemAsync('settings', JSON.stringify(settings)).then(
-            (res) => console.log(res)
-          )
-        }
-
-        setSettings(JSON.parse(result ?? JSON.stringify(settings)))
-      })
-    } else {
-      setSettings({ ...settings, theme: colorScheme ?? 'light' })
-    }
+    setSettings({ ...settings, theme: colorScheme ?? 'light' })
   }, [])
 
   const theme =
@@ -80,6 +67,7 @@ const RootLayoutNav = () => {
     materialLight: Themes.light[settings.color]
   })
 
+  const createStack = ['costumer', 'invoice', 'product']
   return (
     <ThemeProvider
       value={
@@ -91,14 +79,17 @@ const RootLayoutNav = () => {
       <PaperProvider theme={theme}>
         <Stack
           screenOptions={{
-            animation: 'slide_from_bottom',
-            header: (props) => (
-              <StackHeader navProps={props} children={undefined} />
-            )
+            animation: 'slide_from_bottom'
           }}
         >
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="search" options={{ title: 'Pesquisar' }} />
+          <Stack.Screen name="filter" options={{ title: 'Filtrar' }} />
+          {createStack.map((stack) => (
+            <Stack.Screen
+              name={`(create)/${stack}`}
+              options={{ title: 'Criar' }}
+            />
+          ))}
         </Stack>
       </PaperProvider>
     </ThemeProvider>
