@@ -10,13 +10,15 @@ const TabLayout = () => {
     {
       key: 1,
       name: 'index',
-      title: 'Tela Inicial',
+      createName: undefined,
+      title: 'Roteiro',
       iconFocused: 'home' as const,
       iconUnfocused: 'home-outline' as const
     },
     {
       key: 2,
       name: 'costumers',
+      createName: 'costumer',
       title: 'Clientes',
       iconFocused: 'account-box-multiple' as const,
       iconUnfocused: 'account-box-multiple-outline' as const
@@ -24,6 +26,7 @@ const TabLayout = () => {
     {
       key: 3,
       name: 'products',
+      createName: 'product',
       title: 'Produtos',
       iconFocused: 'basket' as const,
       iconUnfocused: 'basket-outline' as const
@@ -31,16 +34,10 @@ const TabLayout = () => {
     {
       key: 4,
       name: 'invoices',
+      createName: 'invoice',
       title: 'Ordens',
       iconFocused: 'book' as const,
       iconUnfocused: 'book-outline' as const
-    },
-    {
-      key: 5,
-      name: 'settings',
-      title: 'Configs',
-      iconFocused: 'cog' as const,
-      iconUnfocused: 'cog-outline' as const
     }
   ] as const
 
@@ -52,55 +49,38 @@ const TabLayout = () => {
         header: (props) => <TabsHeader navProps={props} children={undefined} />
       }}
     >
-      {tabs.map((tab) =>
-        tab.name === 'settings' ? (
-          <Tabs.Screen
-            key={tab.key}
-            name={tab.name}
-            options={{
-              title: tab.title,
-              tabBarIcon: (props) => (
-                <MaterialCommunityIcons
-                  {...props}
-                  size={24}
-                  name={props.focused ? tab.iconFocused : tab.iconUnfocused}
-                />
-              )
-            }}
-          />
-        ) : (
-          <Tabs.Screen
-            key={tab.key}
-            name={tab.name}
-            options={{
-              title: tab.title,
-              headerRight: () => (
-                <>
-                  <Tooltip title="Pesquisar">
-                    <Appbar.Action
-                      icon="magnify"
-                      onPress={() => router.push('/search')}
-                    />
-                  </Tooltip>
-                  <Tooltip title="Configs">
-                    <Appbar.Action
-                      icon="cog"
-                      onPress={() => router.push('/(tabs)/settings')}
-                    />
-                  </Tooltip>
-                </>
+      {tabs.map((tab) => (
+        <Tabs.Screen
+          key={tab.key}
+          name={tab.name}
+          options={{
+            title: tab.title,
+            headerRight: () =>
+              tab.name === 'index' ? (
+                <Tooltip title="Filtrar">
+                  <Appbar.Action
+                    icon="filter"
+                    onPress={() => router.push('/filter')}
+                  />
+                </Tooltip>
+              ) : (
+                <Tooltip title="Adicionar">
+                  <Appbar.Action
+                    icon="plus"
+                    onPress={() => router.push(`/${tab.createName}`)}
+                  />
+                </Tooltip>
               ),
-              tabBarIcon: (props) => (
-                <MaterialCommunityIcons
-                  {...props}
-                  size={24}
-                  name={props.focused ? tab.iconFocused : tab.iconUnfocused}
-                />
-              )
-            }}
-          />
-        )
-      )}
+            tabBarIcon: (props) => (
+              <MaterialCommunityIcons
+                {...props}
+                size={24}
+                name={props.focused ? tab.iconFocused : tab.iconUnfocused}
+              />
+            )
+          }}
+        />
+      ))}
     </Tabs>
   )
 }
