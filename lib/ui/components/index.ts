@@ -1,9 +1,9 @@
 /**
  * Components
  */
+import ConfirmVisitModal from '@/lib/ui/components/ConfirmVisitModal'
 import OrderModal from '@/lib/ui/components/OrderModal'
-import StackHeader from '@/lib/ui/components/StackHeader'
 import TabBar from '@/lib/ui/components/TabBar'
 import TabsHeader from '@/lib/ui/components/TabsHeader'
 
-export { OrderModal, StackHeader, TabBar, TabsHeader }
+export { ConfirmVisitModal, OrderModal, TabBar, TabsHeader }
