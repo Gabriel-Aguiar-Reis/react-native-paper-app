@@ -1,64 +1,79 @@
 import React, { useState } from 'react'
-import { DataTable, Surface, Text } from 'react-native-paper'
-import { OrderModal, styles } from '@/lib/ui'
-import { IOrderRow } from '@/lib/interfaces'
+import { DataTable, Surface, TouchableRipple } from 'react-native-paper'
+import { OrderModal, ConfirmVisitModal, styles } from '@/lib/ui'
+import { IInvoice } from '@/lib/interfaces'
+import { mockInvoices } from '@/lib/mocks'
+import { ScrollView } from 'react-native'
 
 const TabsHome = () => {
   const [visible, setVisible] = useState(false)
-  const [selectedRow, setSelectedRow] = useState<IOrderRow | null>(null)
+  const [confirmVisible, setConfirmVisible] = useState(false)
+  const [selectedRow, setSelectedRow] = useState<IInvoice | undefined>()
 
-  const showModal = (row: IOrderRow) => {
+  const showModal = (row: IInvoice) => {
     setSelectedRow(row)
     setVisible(true)
   }
 
   const hideModal = () => {
     setVisible(false)
-    setSelectedRow(null)
+    setSelectedRow(undefined)
   }
 
-  const data = [
-    { key: 1, name: 'Doceria Joao', street: 'Rua 1', returnDate: '11/08/2024' },
-    {
-      key: 2,
-      name: 'Lanchonete Xis',
-      street: 'Rua 2',
-      returnDate: '14/09/2024'
-    },
-    { key: 3, name: 'Igreja Vida', street: 'Rua 3', returnDate: '15/10/2024' },
-    {
-      key: 4,
-      name: 'Carlos Drummond',
-      street: 'Rua 4',
-      returnDate: '11/08/2024'
-    },
-    {
-      key: 5,
-      name: 'Papelaria Dois',
-      street: 'Rua 2',
-      returnDate: '20/07/2024'
-    },
-    { key: 6, name: 'Fabrica Giga', street: 'Rua 1', returnDate: '11/01/2025' }
-  ]
+  const handleConfirmVisit = () => {
+    setVisible(false)
+    setConfirmVisible(true)
+  }
+
+  const handleAction = async (action: 'generate' | 'cancel' | 'close') => {
+    if (action === 'generate') {
+      try {
+        console.log('generate')
+      } catch (error) {
+        console.error('Erro durante a transação:', error)
+      }
+    } else if (action === 'cancel') {
+      console.log('cancel')
+    }
+    setConfirmVisible(false)
+    setSelectedRow(undefined)
+  }
 
   return (
-    <Surface style={styles.screen}>
-      <Text variant="displaySmall">Roteiro Atual</Text>
-      <DataTable>
-        <DataTable.Header>
-          <DataTable.Title>Cliente</DataTable.Title>
-          <DataTable.Title>Endereço</DataTable.Title>
-          <DataTable.Title>Retorno</DataTable.Title>
-        </DataTable.Header>
-        {data.map((row) => (
-          <DataTable.Row key={row.key} onPress={() => showModal(row)}>
-            <DataTable.Cell>{row.name}</DataTable.Cell>
-            <DataTable.Cell>{row.street}</DataTable.Cell>
-            <DataTable.Cell>{row.returnDate}</DataTable.Cell>
-          </DataTable.Row>
-        ))}
-      </DataTable>
-      <OrderModal visible={visible} onDismiss={hideModal} data={selectedRow} />
+    <Surface style={styles.indexScreen}>
+      <ScrollView showsHorizontalScrollIndicator={true}>
+        <DataTable>
+          <DataTable.Header>
+            <DataTable.Title>Cliente</DataTable.Title>
+            <DataTable.Title
+              style={{ display: 'flex', justifyContent: 'flex-end' }}
+            >
+              Retorno
+            </DataTable.Title>
+          </DataTable.Header>
+          {mockInvoices.map((row) => (
+            <TouchableRipple key={row.id}>
+              <DataTable.Row onPress={() => showModal(row)}>
+                <DataTable.Cell>{row.costumer.name}</DataTable.Cell>
+                <DataTable.Cell
+                  style={{ display: 'flex', justifyContent: 'flex-end' }}
+                >
+                  {row.returnDate.toLocaleDateString('pt-BR')}
+                </DataTable.Cell>
+              </DataTable.Row>
+            </TouchableRipple>
+          ))}
+        </DataTable>
+      </ScrollView>
+      <OrderModal
+        visible={visible}
+        onDismiss={hideModal}
+        onConfirmVisit={handleConfirmVisit}
+        data={selectedRow}
+      />
+      {confirmVisible && (
+        <ConfirmVisitModal visible={confirmVisible} onAction={handleAction} />
+      )}
     </Surface>
   )
 }
