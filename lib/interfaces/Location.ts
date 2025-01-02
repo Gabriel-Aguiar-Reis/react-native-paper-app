@@ -1,11 +1,11 @@
 interface ILocation {
-  id: string
+  id: number
   street: string
   number: number
   neighbourhood: string
   city: string
   CEP: string
-  costumerId: string
+  costumerId: number
 }
 
 export default ILocation

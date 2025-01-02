@@ -1,5 +1,5 @@
 interface IContact {
-  id: string
+  id: number
   name: string
   phone: string
   isWhatsapp: boolean

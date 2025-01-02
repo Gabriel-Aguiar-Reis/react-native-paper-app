@@ -1,11 +1,11 @@
 import { ICategory } from '@/lib/interfaces'
 
 interface IProduct {
-  id: string
+  id: number
   name: string
   price: number
   validityMonths: number
-  category: ICategory
+  categoryId: ICategory['id']
 }
 
 export default IProduct

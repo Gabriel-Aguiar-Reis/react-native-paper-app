@@ -1,7 +1,7 @@
 import { IContact, ILocation } from '@/lib/interfaces'
 
 interface ICostumer {
-  id: string
+  id: number
   name: string
   locationData: ILocation
   contactData: IContact

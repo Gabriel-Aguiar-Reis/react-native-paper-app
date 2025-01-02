@@ -1,9 +1,9 @@
-import { ICostumer, IProduct } from '@/lib/interfaces'
+import { ICostumer, IInvoiceProduct } from '@/lib/interfaces'
 
 interface IInvoice {
-  id: string
+  id: number
   costumer: ICostumer
-  products: { product: IProduct; quantity: number }[]
+  products: IInvoiceProduct[]
   totalValue: number
   visitDate: Date
   returnDate: Date
