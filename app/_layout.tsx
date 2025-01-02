@@ -14,6 +14,8 @@ import { adaptNavigationTheme, PaperProvider } from 'react-native-paper'
 
 import { Setting } from '@/lib/types'
 import { Themes } from '@/lib/ui'
+import { SQLiteProvider } from 'expo-sqlite'
+import { initializeDatabase } from '@/lib/services/storage/sqliteDBService'
 export { ErrorBoundary } from 'expo-router'
 
 export const unstable_settings = { initialRouteName: '(tabs)' }
@@ -67,7 +69,11 @@ const RootLayoutNav = () => {
     materialLight: Themes.light[settings.color]
   })
 
-  const createStack = ['costumer', 'invoice', 'product']
+  const createStack = [
+    { name: 'costumer', title: 'Criar Novo Cliente' },
+    { name: 'invoice', title: 'Criar Nova Ordem de Visita' },
+    { name: 'product', title: 'Criar Novo Produto' }
+  ]
   return (
     <ThemeProvider
       value={
@@ -77,20 +83,22 @@ const RootLayoutNav = () => {
       }
     >
       <PaperProvider theme={theme}>
-        <Stack
-          screenOptions={{
-            animation: 'slide_from_bottom'
-          }}
-        >
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="filter" options={{ title: 'Filtrar' }} />
-          {createStack.map((stack) => (
-            <Stack.Screen
-              name={`(create)/${stack}`}
-              options={{ title: 'Criar' }}
-            />
-          ))}
-        </Stack>
+        <SQLiteProvider databaseName="sqlite.db" onInit={initializeDatabase}>
+          <Stack
+            screenOptions={{
+              animation: 'slide_from_bottom'
+            }}
+          >
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="filter" options={{ title: 'Filtrar' }} />
+            {createStack.map((stack) => (
+              <Stack.Screen
+                name={`(create)/${stack.name}`}
+                options={{ title: stack.title }}
+              />
+            ))}
+          </Stack>
+        </SQLiteProvider>
       </PaperProvider>
     </ThemeProvider>
   )
