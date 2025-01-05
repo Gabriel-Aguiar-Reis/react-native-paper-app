@@ -3,7 +3,7 @@ interface IContact {
   name: string
   phone: string
   isWhatsapp: boolean
-  costumerId: string
+  costumerId: number
 }
 
 export default IContact
