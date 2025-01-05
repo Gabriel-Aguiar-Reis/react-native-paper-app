@@ -12,24 +12,20 @@ export async function createCostumer(
   db: SQLiteDatabase
 ): Promise<ICostumer> {
   const costumerRepo = new GenericRepository<ICostumer>('costumers', db)
-  const costumerLocationRepo = new GenericRepository<
-    Omit<ILocation, 'costumerId'> & { costumer_id: string }
-  >('locations', db)
-  const costumerContactRepo = new GenericRepository<
-    Omit<IContact, 'costumerId'> & { costumer_id: string }
-  >('contacts', db)
+  const costumerLocationRepo = new GenericRepository<ILocation>('locations', db)
+  const costumerContactRepo = new GenericRepository<IContact>('contacts', db)
   try {
     const { insertedRowId: costumerId } = await costumerRepo.create({
       name: costumer.name
     })
     await costumerLocationRepo.create({
       ...costumer.locationData,
-      costumer_id: costumerId
+      costumerId
     })
 
     await costumerContactRepo.create({
       ...costumer.contactData,
-      costumer_id: costumerId
+      costumerId
     })
 
     const result = (await db.getFirstAsync(
@@ -37,20 +33,20 @@ export async function createCostumer(
       SELECT  
         c.id AS id, 
         c.name AS name, 
-        l.id AS location_id,
+        l.id AS locationId,
         l.street, 
         l.number, 
         l.neighbourhood, 
         l.city, 
         l.CEP, 
-        t.id AS contact_id,
-        t.name AS contact_name, 
+        t.id AS contactId,
+        t.name AS contactName, 
         t.phone, 
         t.isWhatsapp
       FROM 
         costumers c
-      LEFT JOIN locations l ON l.costumer_id = c.id
-      LEFT JOIN contacts t ON t.costumer_id = c.id
+      LEFT JOIN locations l ON l.costumerId = c.id
+      LEFT JOIN contacts t ON t.costumerId = c.id
       WHERE c.id = ?;
       `,
       [costumerId]
@@ -64,27 +60,49 @@ export async function createCostumer(
 
 export async function readCostumers(db: SQLiteDatabase): Promise<ICostumer[]> {
   const costumerRepo = new GenericRepository<ICostumer>('costumers', db)
+  const costumerLocationRepo = new GenericRepository<ILocation>('locations', db)
+  const costumerContactRepo = new GenericRepository<IContact>('contacts', db)
   try {
-    const allCostumers = await costumerRepo.read()
-    return allCostumers
+    const costumerData = await costumerRepo.read()
+    const locationData = await costumerLocationRepo.read()
+    const contactData = await costumerContactRepo.read()
+
+    const returnData: ICostumer[] = []
+
+    costumerData.forEach((costumer) => {
+      const relatedLocation = locationData.find(
+        (location) => location.costumerId === costumer.id
+      )
+      const relatedContact = contactData.find(
+        (contact) => contact.costumerId === costumer.id
+      )
+
+      const data: ICostumer = {
+        id: costumer.id,
+        name: costumer.name,
+        locationData: relatedLocation || {
+          id: 0,
+          street: '',
+          number: 0,
+          neighbourhood: '',
+          city: '',
+          CEP: '',
+          costumerId: 0
+        },
+        contactData: relatedContact || {
+          id: 0,
+          name: '',
+          phone: '',
+          isWhatsapp: false,
+          costumerId: 0
+        }
+      }
+
+      returnData.push(data)
+    })
+
+    return returnData
   } catch (error) {
     throw new Error(`Falha ao buscar clientes: ${error}`)
   }
 }
-
-// const costumerRepository = new GenericRepository<ICostumer>('costumer');
-
-// // Criar um cliente
-// await costumerRepository.create({ name: 'John Doe' });
-
-// // Ler todos os clientes
-// const allCostumers = await costumerRepository.read();
-
-// // Ler um cliente específico
-// const specificCostumer = await costumerRepository.readOneRow({ id: 1 });
-
-// // Atualizar um cliente
-// await costumerRepository.update({ id: 1, name: 'Updated Name' });
-
-// // Deletar um cliente
-// await costumerRepository.destroy(1);

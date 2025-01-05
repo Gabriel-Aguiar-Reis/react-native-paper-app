@@ -11,7 +11,7 @@ export async function initializeDatabase(database: SQLiteDatabase) {
 
     CREATE TABLE IF NOT EXISTS locations (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      costumer_id INTEGER REFERENCES costumers (id) ON DELETE CASCADE,
+      costumerId INTEGER REFERENCES costumers (id) ON DELETE CASCADE,
       street TEXT NOT NULL,
       number INTEGER NOT NULL,
       neighbourhood TEXT NOT NULL,
@@ -21,7 +21,7 @@ export async function initializeDatabase(database: SQLiteDatabase) {
 
     CREATE TABLE IF NOT EXISTS contacts (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      costumer_id INTEGER REFERENCES costumers (id) ON DELETE CASCADE,
+      costumerId INTEGER REFERENCES costumers (id) ON DELETE CASCADE,
       name TEXT NOT NULL,
       phone TEXT NOT NULL,
       isWhatsapp INTEGER NOT NULL -- 0 or 1
@@ -36,24 +36,24 @@ export async function initializeDatabase(database: SQLiteDatabase) {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,
       price REAL NOT NULL,
-      validity_months INTEGER NOT NULL,
-      category_id INTEGER REFERENCES categories (id)
+      validityMonths INTEGER NOT NULL,
+      categoryId INTEGER REFERENCES categories (id)
     );
 
     CREATE TABLE IF NOT EXISTS invoices (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      costumer_id INTEGER REFERENCES costumers (id),
-      total_value REAL NOT NULL,
-      visit_date TEXT NOT NULL,
-      return_date TEXT NOT NULL,
+      costumerId INTEGER REFERENCES costumers (id),
+      totalValue REAL NOT NULL,
+      visitDate TEXT NOT NULL,
+      returnDate TEXT NOT NULL,
       realized INTEGER NOT NULL
     );
 
     CREATE TABLE IF NOT EXISTS invoice_products (
-      invoice_id INTEGER REFERENCES invoices (id),
-      product_id INTEGER REFERENCES products (id),
+      invoiceId INTEGER REFERENCES invoices (id),
+      productId INTEGER REFERENCES products (id),
       quantity INTEGER NOT NULL,
-      PRIMARY KEY (invoice_id, product_id)
+      PRIMARY KEY (invoiceId, productId)
     );
   `)
 }
