@@ -1,4 +1,4 @@
-import { SQLiteDatabase, SQLiteRunResult } from 'expo-sqlite'
+import { SQLiteDatabase } from 'expo-sqlite'
 
 type SQLiteBindValue = string | number | null
 
@@ -11,7 +11,7 @@ export class GenericRepository<T> {
     this.db = db
   }
 
-  async create(data: Partial<T>): Promise<{ insertedRowId: string }> {
+  async create(data: Partial<T>): Promise<{ insertedRowId: number }> {
     try {
       const fields = Object.keys(data).join(', ')
       const placeholders = Object.keys(data)
@@ -24,7 +24,7 @@ export class GenericRepository<T> {
         values
       )
 
-      return { insertedRowId: result.lastInsertRowId.toLocaleString() }
+      return { insertedRowId: result.lastInsertRowId }
     } catch (error) {
       throw error
     }
@@ -59,7 +59,7 @@ export class GenericRepository<T> {
     }
   }
 
-  async update(data: Partial<T> & { id: string | number }): Promise<void> {
+  async update(data: Partial<T> & { id: number }): Promise<void> {
     try {
       const fieldsToUpdate = Object.keys(data)
         .filter((key) => key !== 'id')
@@ -78,7 +78,7 @@ export class GenericRepository<T> {
     }
   }
 
-  async destroy(id: string | number): Promise<void> {
+  async destroy(id: number): Promise<void> {
     try {
       await this.db.runAsync(`DELETE FROM ${this.tableName} WHERE id = ?`, [id])
     } catch (error) {
