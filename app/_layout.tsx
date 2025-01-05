@@ -16,6 +16,7 @@ import { Setting } from '@/lib/types'
 import { Themes } from '@/lib/ui'
 import { SQLiteProvider } from 'expo-sqlite'
 import { initializeDatabase } from '@/lib/services/storage/sqliteDBService'
+import { CostumerProvider } from '@/lib/context/CostumerContext'
 export { ErrorBoundary } from 'expo-router'
 
 export const unstable_settings = { initialRouteName: '(tabs)' }
@@ -84,20 +85,22 @@ const RootLayoutNav = () => {
     >
       <PaperProvider theme={theme}>
         <SQLiteProvider databaseName="sqlite.db" onInit={initializeDatabase}>
-          <Stack
-            screenOptions={{
-              animation: 'slide_from_bottom'
-            }}
-          >
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="filter" options={{ title: 'Filtrar' }} />
-            {createStack.map((stack) => (
-              <Stack.Screen
-                name={`(create)/${stack.name}`}
-                options={{ title: stack.title }}
-              />
-            ))}
-          </Stack>
+          <CostumerProvider>
+            <Stack
+              screenOptions={{
+                animation: 'slide_from_bottom'
+              }}
+            >
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="filter" options={{ title: 'Filtrar' }} />
+              {createStack.map((stack) => (
+                <Stack.Screen
+                  name={`(create)/${stack.name}`}
+                  options={{ title: stack.title }}
+                />
+              ))}
+            </Stack>
+          </CostumerProvider>
         </SQLiteProvider>
       </PaperProvider>
     </ThemeProvider>
