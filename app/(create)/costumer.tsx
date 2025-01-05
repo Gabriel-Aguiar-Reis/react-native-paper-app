@@ -1,6 +1,8 @@
+import { useCostumerContext } from '@/lib/context/CostumerContext'
 import { ICostumer, ICreateCostumerData } from '@/lib/interfaces'
 import { createCostumer } from '@/lib/services/storage/costumerService'
 import { styles } from '@/lib/ui'
+import { router } from 'expo-router'
 import { useSQLiteContext } from 'expo-sqlite'
 import { useState } from 'react'
 import { ScrollView, View } from 'react-native'
@@ -35,6 +37,8 @@ const CreateCostumer = () => {
 
   const db = useSQLiteContext()
 
+  const { addCostumer } = useCostumerContext()
+
   const data: ICreateCostumerData = {
     name: name,
     locationData: {
@@ -54,7 +58,8 @@ const CreateCostumer = () => {
   const handleCreate = async () => {
     try {
       const result = await createCostumer(data, db)
-      console.log(result)
+      addCostumer(result)
+      router.push('/costumers')
     } catch (error) {
       console.error(error)
     }
