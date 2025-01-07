@@ -1,8 +1,8 @@
 import { IInvoice, IProduct } from '@/lib/interfaces'
 
 interface IInvoiceProduct {
-  invoiceId: IInvoice['id']
-  productId: IProduct['id']
+  invoiceId: IInvoice['invId']
+  productId: IProduct['proId']
   quantity: number
 }
 

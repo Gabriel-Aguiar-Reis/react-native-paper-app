@@ -1,8 +1,8 @@
 interface IContact {
-  id: number
-  name: string
+  conId: number
+  conName: string
   phone: string
-  isWhatsapp: boolean
+  isWhatsapp: number
   costumerId: number
 }
 

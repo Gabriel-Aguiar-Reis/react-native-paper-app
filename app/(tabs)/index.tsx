@@ -52,9 +52,9 @@ const TabsHome = () => {
             </DataTable.Title>
           </DataTable.Header>
           {mockInvoices.map((row) => (
-            <TouchableRipple key={row.id}>
+            <TouchableRipple key={row.invId}>
               <DataTable.Row onPress={() => showModal(row)}>
-                <DataTable.Cell>{row.costumer.name}</DataTable.Cell>
+                <DataTable.Cell>{row.costumer.cosName}</DataTable.Cell>
                 <DataTable.Cell
                   style={{ display: 'flex', justifyContent: 'flex-end' }}
                 >

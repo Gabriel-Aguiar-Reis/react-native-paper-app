@@ -1,5 +1,5 @@
 interface ILocation {
-  id: number
+  locId: number
   street: string
   number: number
   neighbourhood: string

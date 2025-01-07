@@ -1,6 +1,6 @@
 interface ICategory {
-  id: number
-  name: string
+  catId: number
+  catName: string
 }
 
 export default ICategory

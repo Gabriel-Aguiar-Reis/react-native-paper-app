@@ -1,9 +1,9 @@
 import { IContact, ICostumer, ILocation } from '@/lib/interfaces'
 
 interface ICreateCostumerData {
-  name: ICostumer['name']
-  locationData: Omit<ILocation, 'id' | 'costumerId'>
-  contactData: Omit<IContact, 'id' | 'costumerId'>
+  cosName: ICostumer['cosName']
+  locationData: Omit<ILocation, 'locId' | 'costumerId'>
+  contactData: Omit<IContact, 'conId' | 'costumerId'>
 }
 
 export default ICreateCostumerData

@@ -1,7 +1,7 @@
 import { ICostumer, IInvoiceProduct } from '@/lib/interfaces'
 
 interface IInvoice {
-  id: number
+  invId: number
   costumer: ICostumer
   products: IInvoiceProduct[]
   totalValue: number

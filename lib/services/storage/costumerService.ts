@@ -16,7 +16,7 @@ export async function createCostumer(
   const costumerContactRepo = new GenericRepository<IContact>('contacts', db)
   try {
     const { insertedRowId: costumerId } = await costumerRepo.create({
-      name: costumer.name
+      cosName: costumer.cosName
     })
     await costumerLocationRepo.create({
       ...costumer.locationData,
@@ -31,23 +31,23 @@ export async function createCostumer(
     const result = (await db.getFirstAsync(
       `
       SELECT  
-        c.id AS id, 
-        c.name AS name, 
-        l.id AS locationId,
+        c.cosId, 
+        c.cosName, 
+        l.locId,
         l.street, 
         l.number, 
         l.neighbourhood, 
         l.city, 
         l.CEP, 
-        t.id AS contactId,
-        t.name AS contactName, 
+        t.conId,
+        t.conName, 
         t.phone, 
         t.isWhatsapp
       FROM 
         costumers c
-      LEFT JOIN locations l ON l.costumerId = c.id
-      LEFT JOIN contacts t ON t.costumerId = c.id
-      WHERE c.id = ?;
+      LEFT JOIN locations l ON l.costumerId = c.cosId
+      LEFT JOIN contacts t ON t.costumerId = c.cosId
+      WHERE c.cosId = ?;
       `,
       [costumerId]
     )) as ICostumer
@@ -71,17 +71,17 @@ export async function readCostumers(db: SQLiteDatabase): Promise<ICostumer[]> {
 
     costumerData.forEach((costumer) => {
       const relatedLocation = locationData.find(
-        (location) => location.costumerId === costumer.id
+        (location) => location.costumerId === costumer.cosId
       )
       const relatedContact = contactData.find(
-        (contact) => contact.costumerId === costumer.id
+        (contact) => contact.costumerId === costumer.cosId
       )
 
       const data: ICostumer = {
-        id: costumer.id,
-        name: costumer.name,
+        cosId: costumer.cosId,
+        cosName: costumer.cosName,
         locationData: relatedLocation || {
-          id: 0,
+          locId: 0,
           street: '',
           number: 0,
           neighbourhood: '',
@@ -90,10 +90,10 @@ export async function readCostumers(db: SQLiteDatabase): Promise<ICostumer[]> {
           costumerId: 0
         },
         contactData: relatedContact || {
-          id: 0,
-          name: '',
+          conId: 0,
+          conName: '',
           phone: '',
-          isWhatsapp: false,
+          isWhatsapp: 0,
           costumerId: 0
         }
       }

@@ -17,7 +17,7 @@ import {
 } from 'react-native-paper'
 
 const CreateCostumer = () => {
-  const [name, setName] = useState<ICostumer['name']>('')
+  const [cosName, setCosName] = useState<ICostumer['cosName']>('')
   const [locationStreet, setLocationStreet] =
     useState<ICostumer['locationData']['street']>('')
   const [locationNumber, setLocationNumber] =
@@ -29,18 +29,18 @@ const CreateCostumer = () => {
   const [locationCEP, setLocationCEP] =
     useState<ICostumer['locationData']['CEP']>('')
   const [contactName, setContactName] =
-    useState<ICostumer['contactData']['name']>('')
+    useState<ICostumer['contactData']['conName']>('')
   const [contactNumber, setContactNumber] =
     useState<ICostumer['contactData']['phone']>('')
   const [isWhatsapp, setIsWhatsapp] =
-    useState<ICostumer['contactData']['isWhatsapp']>(false)
+    useState<ICostumer['contactData']['isWhatsapp']>(0)
 
   const db = useSQLiteContext()
 
   const { addCostumer } = useCostumerContext()
 
   const data: ICreateCostumerData = {
-    name: name,
+    cosName: cosName,
     locationData: {
       street: locationStreet,
       number: locationNumber,
@@ -49,7 +49,7 @@ const CreateCostumer = () => {
       CEP: locationCEP
     },
     contactData: {
-      name: contactName,
+      conName: contactName,
       phone: contactNumber,
       isWhatsapp: isWhatsapp
     }
@@ -72,7 +72,7 @@ const CreateCostumer = () => {
           key={1}
           label={'Nome da Empresa'}
           mode="outlined"
-          onChangeText={(e) => setName(e)}
+          onChangeText={(e) => setCosName(e)}
           multiline={true}
         />
         <Text variant="titleLarge" style={{ marginVertical: 10 }}>
@@ -94,7 +94,7 @@ const CreateCostumer = () => {
               key={3}
               label={'N.º'}
               mode="outlined"
-              inputMode="numeric"
+              inputMode="tel"
               onChangeText={(e) => setLocationNumber(Number(e))}
               multiline={true}
             />
@@ -121,7 +121,7 @@ const CreateCostumer = () => {
             <TextInput
               key={6}
               label={'CEP'}
-              inputMode="numeric"
+              inputMode="tel"
               mode="outlined"
               render={(props) => (
                 <MaskedTextInput
@@ -185,8 +185,8 @@ const CreateCostumer = () => {
           >
             <RadioButton
               value="true"
-              status={isWhatsapp === true ? 'checked' : 'unchecked'}
-              onPress={() => setIsWhatsapp(true)}
+              status={isWhatsapp === 1 ? 'checked' : 'unchecked'}
+              onPress={() => setIsWhatsapp(1)}
             />
             <Text>Sim</Text>
           </View>
@@ -200,8 +200,8 @@ const CreateCostumer = () => {
           >
             <RadioButton
               value="false"
-              status={isWhatsapp === false ? 'checked' : 'unchecked'}
-              onPress={() => setIsWhatsapp(false)}
+              status={isWhatsapp === 0 ? 'checked' : 'unchecked'}
+              onPress={() => setIsWhatsapp(0)}
             />
             <Text>Não</Text>
           </View>
