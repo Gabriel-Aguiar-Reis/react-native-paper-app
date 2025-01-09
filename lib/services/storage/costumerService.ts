@@ -2,7 +2,8 @@ import {
   IContact,
   ICostumer,
   ICreateCostumerData,
-  ILocation
+  ILocation,
+  IReadCostumerData
 } from '@/lib/interfaces'
 import { GenericRepository } from '@/lib/services/storage/genericRepository'
 import { SQLiteDatabase } from 'expo-sqlite'
@@ -10,47 +11,61 @@ import { SQLiteDatabase } from 'expo-sqlite'
 export async function createCostumer(
   costumer: ICreateCostumerData,
   db: SQLiteDatabase
-): Promise<ICostumer> {
+): Promise<IReadCostumerData> {
   const costumerRepo = new GenericRepository<ICostumer>('costumers', db)
   const costumerLocationRepo = new GenericRepository<ILocation>('locations', db)
   const costumerContactRepo = new GenericRepository<IContact>('contacts', db)
   try {
     const { insertedRowId: costumerId } = await costumerRepo.create({
-      cosName: costumer.cosName
-    })
-    await costumerLocationRepo.create({
-      ...costumer.locationData,
-      costumerId
+      name: costumer.name
     })
 
-    await costumerContactRepo.create({
-      ...costumer.contactData,
+    const locationData = {
+      street: costumer.street,
+      number: costumer.number,
+      neighbourhood: costumer.neighbourhood,
+      city: costumer.city,
+      zipCode: costumer.zipCode,
       costumerId
+    }
+
+    await costumerLocationRepo.create({
+      ...locationData
+    })
+
+    const contactData = {
+      name: costumer.contactName,
+      phone: costumer.phone,
+      isWhatsapp: costumer.isWhatsapp,
+      costumerId
+    }
+    await costumerContactRepo.create({
+      ...contactData
     })
 
     const result = (await db.getFirstAsync(
       `
-      SELECT  
-        c.cosId, 
-        c.cosName, 
-        l.locId,
-        l.street, 
-        l.number, 
-        l.neighbourhood, 
-        l.city, 
-        l.CEP, 
-        t.conId,
-        t.conName, 
-        t.phone, 
+      SELECT
+        c.id,
+        c.name,
+        l.id AS locationId,
+        l.street,
+        l.number,
+        l.neighbourhood,
+        l.city,
+        l.zipCode,
+        t.id AS contactId,
+        t.name AS contactName,
+        t.phone,
         t.isWhatsapp
-      FROM 
+      FROM
         costumers c
-      LEFT JOIN locations l ON l.costumerId = c.cosId
-      LEFT JOIN contacts t ON t.costumerId = c.cosId
-      WHERE c.cosId = ?;
+      INNER JOIN locations l ON l.id = c.id
+      INNER JOIN contacts t ON t.id = c.id
+      WHERE c.id = ?;
       `,
       [costumerId]
-    )) as ICostumer
+    )) as IReadCostumerData
 
     return result
   } catch (error) {
@@ -58,50 +73,48 @@ export async function createCostumer(
   }
 }
 
-export async function readCostumers(db: SQLiteDatabase): Promise<ICostumer[]> {
-  const costumerRepo = new GenericRepository<ICostumer>('costumers', db)
-  const costumerLocationRepo = new GenericRepository<ILocation>('locations', db)
-  const costumerContactRepo = new GenericRepository<IContact>('contacts', db)
+export async function readCostumers(
+  db: SQLiteDatabase
+): Promise<IReadCostumerData[]> {
   try {
-    const costumerData = await costumerRepo.read()
-    const locationData = await costumerLocationRepo.read()
-    const contactData = await costumerContactRepo.read()
+    const result = (await db.getAllAsync(`
+      SELECT
+        c.id,
+        c.name,
+        l.id AS locationId,
+        l.street,
+        l.number,
+        l.neighbourhood,
+        l.city,
+        l.zipCode,
+        t.id AS contactId,
+        t.name AS contactName,
+        t.phone,
+        t.isWhatsapp
+      FROM
+        costumers c
+      LEFT JOIN
+        locations l ON c.id = l.costumerId
+      LEFT JOIN
+        contacts t ON c.id = t.costumerId
+    `)) as IReadCostumerData[]
 
-    const returnData: ICostumer[] = []
+    const formattedData: IReadCostumerData[] = result.map((row) => ({
+      id: row.id,
+      locationId: row.locationId,
+      contactId: row.contactId,
+      name: row.name,
+      street: row.street,
+      number: row.number,
+      neighbourhood: row.neighbourhood,
+      city: row.city,
+      zipCode: row.zipCode,
+      contactName: row.contactName,
+      phone: row.phone,
+      isWhatsapp: row.isWhatsapp
+    }))
 
-    costumerData.forEach((costumer) => {
-      const relatedLocation = locationData.find(
-        (location) => location.costumerId === costumer.cosId
-      )
-      const relatedContact = contactData.find(
-        (contact) => contact.costumerId === costumer.cosId
-      )
-
-      const data: ICostumer = {
-        cosId: costumer.cosId,
-        cosName: costumer.cosName,
-        locationData: relatedLocation || {
-          locId: 0,
-          street: '',
-          number: 0,
-          neighbourhood: '',
-          city: '',
-          CEP: '',
-          costumerId: 0
-        },
-        contactData: relatedContact || {
-          conId: 0,
-          conName: '',
-          phone: '',
-          isWhatsapp: 0,
-          costumerId: 0
-        }
-      }
-
-      returnData.push(data)
-    })
-
-    return returnData
+    return formattedData
   } catch (error) {
     throw new Error(`Falha ao buscar clientes: ${error}`)
   }

@@ -28,17 +28,15 @@ const Costumers = () => {
       <FlatList
         style={{ width: '90%', alignSelf: 'center', padding: 8 }}
         data={costumers}
-        keyExtractor={(item) => item.cosId.toString()}
+        keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <Card mode="outlined" style={{ marginBottom: 12 }}>
             <Card.Content>
-              <Text variant="headlineSmall">{item.cosName}</Text>
+              <Text variant="headlineSmall">{item.name}</Text>
               <Text variant="bodyLarge" numberOfLines={2}>
-                {item.contactData.conName} -{' '}
-                <MaskedText mask="(99) 99999-9999">
-                  {item.contactData.phone}
-                </MaskedText>{' '}
-                {item.contactData.isWhatsapp === 1 && (
+                {item.contactName} -{' '}
+                <MaskedText mask="(99) 99999-9999">{item.phone}</MaskedText>{' '}
+                {item.isWhatsapp === 1 && (
                   <Image
                     source={require('@/assets/images/whatsapp-icon.png')}
                     style={{ width: 14, height: 14, marginLeft: 8 }}
@@ -51,11 +49,8 @@ const Costumers = () => {
                 numberOfLines={3}
                 style={{ color: 'gray' }}
               >
-                {item.locationData.street}, {item.locationData.number} -{' '}
-                {item.locationData.neighbourhood}, {item.locationData.city} -{' '}
-                <MaskedText mask={'99999-999'}>
-                  {item.locationData.CEP}
-                </MaskedText>
+                {item.street}, {item.number} - {item.neighbourhood}, {item.city}{' '}
+                - <MaskedText mask={'99999-999'}>{item.zipCode}</MaskedText>
               </Text>
             </Card.Content>
           </Card>

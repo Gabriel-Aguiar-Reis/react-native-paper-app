@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState } from 'react'
-import { ICostumer, ICostumerContextProps } from '@/lib/interfaces'
+import { ICostumerContextProps, IReadCostumerData } from '@/lib/interfaces'
 
 const CostumerContext = createContext<ICostumerContextProps | undefined>(
   undefined
@@ -8,9 +8,9 @@ const CostumerContext = createContext<ICostumerContextProps | undefined>(
 export const CostumerProvider: React.FC<{ children: React.ReactNode }> = ({
   children
 }) => {
-  const [costumers, setCostumers] = useState<ICostumer[]>([])
+  const [costumers, setCostumers] = useState<IReadCostumerData[]>([])
 
-  const addCostumer = (newCostumer: ICostumer) => {
+  const addCostumer = (newCostumer: IReadCostumerData) => {
     setCostumers((prev) => [...prev, newCostumer])
   }
 

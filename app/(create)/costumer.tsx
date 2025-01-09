@@ -1,5 +1,10 @@
 import { useCostumerContext } from '@/lib/context/CostumerContext'
-import { ICostumer, ICreateCostumerData } from '@/lib/interfaces'
+import {
+  IContact,
+  ICostumer,
+  ICreateCostumerData,
+  ILocation
+} from '@/lib/interfaces'
 import { createCostumer } from '@/lib/services/storage/costumerService'
 import { styles } from '@/lib/ui'
 import { router } from 'expo-router'
@@ -17,42 +22,30 @@ import {
 } from 'react-native-paper'
 
 const CreateCostumer = () => {
-  const [cosName, setCosName] = useState<ICostumer['cosName']>('')
-  const [locationStreet, setLocationStreet] =
-    useState<ICostumer['locationData']['street']>('')
-  const [locationNumber, setLocationNumber] =
-    useState<ICostumer['locationData']['number']>(0)
-  const [locationNeigh, setLocationNeigh] =
-    useState<ICostumer['locationData']['neighbourhood']>('')
-  const [locationCity, setLocationCity] =
-    useState<ICostumer['locationData']['city']>('')
-  const [locationCEP, setLocationCEP] =
-    useState<ICostumer['locationData']['CEP']>('')
-  const [contactName, setContactName] =
-    useState<ICostumer['contactData']['conName']>('')
-  const [contactNumber, setContactNumber] =
-    useState<ICostumer['contactData']['phone']>('')
-  const [isWhatsapp, setIsWhatsapp] =
-    useState<ICostumer['contactData']['isWhatsapp']>(0)
+  const [name, setName] = useState<ICostumer['name']>('')
+  const [street, setStreet] = useState<ILocation['street']>('')
+  const [houseNumber, setHouseNumber] = useState<ILocation['number']>(0)
+  const [neigh, setNeigh] = useState<ILocation['neighbourhood']>('')
+  const [city, setCity] = useState<ILocation['city']>('')
+  const [zipCode, setZipCode] = useState<ILocation['zipCode']>('')
+  const [contactName, setContactName] = useState<IContact['name']>('')
+  const [phone, setPhone] = useState<IContact['phone']>('')
+  const [isWhatsapp, setIsWhatsapp] = useState<IContact['isWhatsapp']>(0)
 
   const db = useSQLiteContext()
 
   const { addCostumer } = useCostumerContext()
 
   const data: ICreateCostumerData = {
-    cosName: cosName,
-    locationData: {
-      street: locationStreet,
-      number: locationNumber,
-      neighbourhood: locationNeigh,
-      city: locationCity,
-      CEP: locationCEP
-    },
-    contactData: {
-      conName: contactName,
-      phone: contactNumber,
-      isWhatsapp: isWhatsapp
-    }
+    name,
+    street,
+    number: houseNumber,
+    neighbourhood: neigh,
+    city,
+    zipCode,
+    contactName,
+    phone,
+    isWhatsapp: isWhatsapp
   }
 
   const handleCreate = async () => {
@@ -72,7 +65,7 @@ const CreateCostumer = () => {
           key={1}
           label={'Nome da Empresa'}
           mode="outlined"
-          onChangeText={(e) => setCosName(e)}
+          onChangeText={(e) => setName(e)}
           multiline={true}
         />
         <Text variant="titleLarge" style={{ marginVertical: 10 }}>
@@ -85,7 +78,7 @@ const CreateCostumer = () => {
               key={2}
               label={'Rua'}
               mode="outlined"
-              onChangeText={(e) => setLocationStreet(e)}
+              onChangeText={(e) => setStreet(e)}
               multiline={true}
             />
           </View>
@@ -95,7 +88,7 @@ const CreateCostumer = () => {
               label={'N.º'}
               mode="outlined"
               inputMode="tel"
-              onChangeText={(e) => setLocationNumber(Number(e))}
+              onChangeText={(e) => setHouseNumber(Number(e))}
               multiline={true}
             />
           </View>
@@ -104,7 +97,7 @@ const CreateCostumer = () => {
           key={4}
           label={'Bairro'}
           mode="outlined"
-          onChangeText={(e) => setLocationNeigh(e)}
+          onChangeText={(e) => setNeigh(e)}
           multiline={true}
         />
         <View style={{ flex: 1, flexDirection: 'row' }}>
@@ -113,7 +106,7 @@ const CreateCostumer = () => {
               key={5}
               label={'Cidade'}
               mode="outlined"
-              onChangeText={(e) => setLocationCity(e)}
+              onChangeText={(e) => setCity(e)}
               multiline={true}
             />
           </View>
@@ -126,11 +119,11 @@ const CreateCostumer = () => {
               render={(props) => (
                 <MaskedTextInput
                   {...props}
-                  value={locationCEP}
+                  value={zipCode}
                   mask="99999-999"
                   onChangeText={(_, rawText) => {
                     props.onChangeText?.(rawText)
-                    setLocationCEP(rawText)
+                    setZipCode(rawText)
                   }}
                 />
               )}
@@ -156,11 +149,11 @@ const CreateCostumer = () => {
           render={(props) => (
             <MaskedTextInput
               {...props}
-              value={contactNumber}
+              value={phone}
               mask="(99) 99999-9999"
               onChangeText={(_, rawText) => {
                 props.onChangeText?.(rawText)
-                setContactNumber(rawText)
+                setPhone(rawText)
               }}
             />
           )}
