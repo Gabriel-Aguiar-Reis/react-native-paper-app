@@ -1,10 +1,6 @@
-import { IContact, ILocation } from '@/lib/interfaces'
-
 interface ICostumer {
-  cosId: number
-  cosName: string
-  locationData: ILocation
-  contactData: IContact
+  id: number
+  name: string
 }
 
 export default ICostumer

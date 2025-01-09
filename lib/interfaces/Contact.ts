@@ -1,9 +1,11 @@
+import ICostumer from '@/lib/interfaces/Costumer'
+
 interface IContact {
-  conId: number
-  conName: string
+  id: number
+  name: string
   phone: string
   isWhatsapp: number
-  costumerId: number
+  costumerId: ICostumer['id']
 }
 
 export default IContact

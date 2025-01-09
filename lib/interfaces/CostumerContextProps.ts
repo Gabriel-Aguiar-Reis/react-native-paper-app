@@ -1,9 +1,9 @@
-import { ICostumer } from '@/lib/interfaces'
+import { IReadCostumerData } from '@/lib/interfaces'
 
 interface ICostumerContextProps {
-  costumers: ICostumer[]
-  addCostumer: (newCostumer: ICostumer) => void
-  setCostumers: React.Dispatch<React.SetStateAction<ICostumer[]>>
+  costumers: IReadCostumerData[]
+  addCostumer: (newCostumer: IReadCostumerData) => void
+  setCostumers: React.Dispatch<React.SetStateAction<IReadCostumerData[]>>
 }
 
 export default ICostumerContextProps

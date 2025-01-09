@@ -1,11 +1,13 @@
+import ICostumer from '@/lib/interfaces/Costumer'
+
 interface ILocation {
-  locId: number
+  id: number
   street: string
   number: number
   neighbourhood: string
   city: string
-  CEP: string
-  costumerId: number
+  zipCode: string
+  costumerId: ICostumer['id']
 }
 
 export default ILocation
