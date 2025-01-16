@@ -4,9 +4,9 @@ interface IInvoice {
   id: number
   costumerId: ICostumer['id']
   totalValue: number
-  visitDate: Date
-  returnDate: Date
-  realized: boolean
+  visitDate: string
+  returnDate: string
+  realized: 0 | 1
 }
 
 export default IInvoice
