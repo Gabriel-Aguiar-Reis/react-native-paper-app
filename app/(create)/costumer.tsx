@@ -9,7 +9,7 @@ import { createCostumer } from '@/lib/services/storage/costumerService'
 import { styles } from '@/lib/ui'
 import { router } from 'expo-router'
 import { useSQLiteContext } from 'expo-sqlite'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { ScrollView, View } from 'react-native'
 import { MaskedTextInput } from 'react-native-mask-text'
 import {
@@ -31,6 +31,7 @@ const CreateCostumer = () => {
   const [contactName, setContactName] = useState<IContact['name']>('')
   const [phone, setPhone] = useState<IContact['phone']>('')
   const [isWhatsapp, setIsWhatsapp] = useState<IContact['isWhatsapp']>(0)
+  const [isButtonDisabled, setIsButtonDisabled] = useState(true)
 
   const db = useSQLiteContext()
 
@@ -57,6 +58,20 @@ const CreateCostumer = () => {
       console.error(error)
     }
   }
+
+  useEffect(() => {
+    const isFormValid =
+      name.trim() !== '' &&
+      street.trim() !== '' &&
+      houseNumber > 0 &&
+      neigh.trim() !== '' &&
+      city.trim() !== '' &&
+      zipCode.trim().length === 8 && // Ex.: "99999-999"
+      contactName.trim() !== '' &&
+      phone.trim().length === 11 // Ex.: "(99) 99999-9999"
+
+    setIsButtonDisabled(!isFormValid)
+  }, [name, street, houseNumber, neigh, city, zipCode, contactName, phone])
 
   return (
     <Surface style={styles.indexScreen}>
@@ -204,6 +219,7 @@ const CreateCostumer = () => {
           onPress={handleCreate}
           mode="contained"
           style={{ width: '40%', alignSelf: 'center' }}
+          disabled={isButtonDisabled}
         >
           Criar
         </Button>

@@ -16,7 +16,7 @@ import {
   Text,
   TextInput
 } from 'react-native-paper'
-import { Dropdown, Option } from 'react-native-paper-dropdown'
+import { PaperSelect } from 'react-native-paper-select'
 
 const CreateProduct = () => {
   const [name, setProName] = useState<ICreateProductData['name']>('')
@@ -27,19 +27,22 @@ const CreateProduct = () => {
     useState<ICreateProductData['categoryName']>('')
   const [checked, setChecked] = useState(false)
   const [categories, setCategories] = useState<ICategory[]>([])
+  const [isButtonDisabled, setIsButtonDisabled] = useState(true)
+
+  const [categoryList, setCategoryList] = useState<{
+    value: string
+    list: { _id: string; value: string }[]
+    selectedList: { _id: string; value: string }[]
+    error: string
+  }>({
+    value: '',
+    list: [],
+    selectedList: [],
+    error: ''
+  })
 
   const db = useSQLiteContext()
   const { addProduct } = useProductContext()
-
-  const OPTIONS: Option[] = []
-
-  categories.forEach((category) => {
-    let obj: Option = {
-      label: category.name,
-      value: category.name
-    }
-    OPTIONS.push(obj)
-  })
 
   const data: ICreateProductData = {
     name: name,
@@ -62,6 +65,16 @@ const CreateProduct = () => {
     try {
       const categoriesData = await readCategories(db)
       setCategories(categoriesData)
+
+      const formattedCategoryList = categoriesData.map((category) => ({
+        _id: String(category.id),
+        value: category.name
+      }))
+
+      setCategoryList((prev) => ({
+        ...prev,
+        list: formattedCategoryList
+      }))
     } catch (error) {
       console.error(error)
     }
@@ -70,6 +83,16 @@ const CreateProduct = () => {
   useEffect(() => {
     getCategories()
   }, [])
+
+  useEffect(() => {
+    const isFormValid =
+      name.trim() !== '' &&
+      price > 0 &&
+      validityMonths > 0 &&
+      (checked ? categoryName.trim() !== '' : categoryList.value !== '')
+
+    setIsButtonDisabled(!isFormValid)
+  }, [name, price, validityMonths, categoryName, categoryList.value, checked])
 
   return (
     <Surface style={styles.indexScreen}>
@@ -136,19 +159,35 @@ const CreateProduct = () => {
             />
           </View>
         </View>
-        <Dropdown
-          label="Categorias"
-          placeholder="Selecione Categorias"
-          options={OPTIONS}
-          value={categoryName}
-          onSelect={(e) => (e !== undefined ? setCategoryName(e) : '')}
-          mode="outlined"
-          disabled={categories.length === 0 ? true : checked}
-        />
+        <View style={{ marginTop: 5 }}>
+          <PaperSelect
+            label="Selecione Categoria"
+            value={categoryList.value}
+            onSelection={(value: any) => {
+              setCategoryList({
+                ...categoryList,
+                value: value.text,
+                selectedList: value.selectedList,
+                error: ''
+              })
+
+              const selectedCategory = categories.find(
+                (category) => String(category.id) === value.selectedList[0]?._id
+              )
+              setCategoryName(selectedCategory?.name ?? '')
+            }}
+            arrayList={categoryList.list}
+            selectedArrayList={categoryList.selectedList}
+            errorText={categoryList.error}
+            multiEnable={false}
+            disabled={categories.length === 0 ? true : checked}
+          />
+        </View>
         <Button
           onPress={handleCreate}
           mode="contained"
           style={{ width: '40%', alignSelf: 'center', marginTop: 10 }}
+          disabled={isButtonDisabled}
         >
           Criar
         </Button>
