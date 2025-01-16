@@ -13,7 +13,6 @@ const Invoices = () => {
   const getInvoices = async () => {
     try {
       const invoicesData = await readInvoices(db)
-      console.log(invoicesData)
       const costumersData = await readCostumers(db)
       invoicesData.map((invoice) => {
         costumersData.forEach((costumer) => {
