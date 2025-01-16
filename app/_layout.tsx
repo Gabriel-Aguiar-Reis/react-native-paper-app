@@ -18,6 +18,7 @@ import { SQLiteProvider } from 'expo-sqlite'
 import { initializeDatabase } from '@/lib/services/storage/sqliteDBService'
 import { CostumerProvider } from '@/lib/context/CostumerContext'
 import { ProductProvider } from '@/lib/context/ProductContext'
+import { InvoiceProvider } from '@/lib/context/InvoiceContext'
 export { ErrorBoundary } from 'expo-router'
 
 export const unstable_settings = { initialRouteName: '(tabs)' }
@@ -88,20 +89,25 @@ const RootLayoutNav = () => {
         <SQLiteProvider databaseName="sqlite.db" onInit={initializeDatabase}>
           <CostumerProvider>
             <ProductProvider>
-              <Stack
-                screenOptions={{
-                  animation: 'slide_from_bottom'
-                }}
-              >
-                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-                <Stack.Screen name="filter" options={{ title: 'Filtrar' }} />
-                {createStack.map((stack) => (
+              <InvoiceProvider>
+                <Stack
+                  screenOptions={{
+                    animation: 'slide_from_bottom'
+                  }}
+                >
                   <Stack.Screen
-                    name={`(create)/${stack.name}`}
-                    options={{ title: stack.title }}
+                    name="(tabs)"
+                    options={{ headerShown: false }}
                   />
-                ))}
-              </Stack>
+                  <Stack.Screen name="filter" options={{ title: 'Filtrar' }} />
+                  {createStack.map((stack) => (
+                    <Stack.Screen
+                      name={`(create)/${stack.name}`}
+                      options={{ title: stack.title }}
+                    />
+                  ))}
+                </Stack>
+              </InvoiceProvider>
             </ProductProvider>
           </CostumerProvider>
         </SQLiteProvider>
