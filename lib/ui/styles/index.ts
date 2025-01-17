@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center'
   },
-  orderModal: {
+  modal: {
     display: 'flex',
     alignSelf: 'center',
     padding: 20 as const,
