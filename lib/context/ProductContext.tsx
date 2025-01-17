@@ -14,6 +14,10 @@ export const ProductProvider: React.FC<{ children: React.ReactNode }> = ({
     setProducts((prev) => [...prev, newProduct])
   }
 
+  const removeProduct = (id: number) => {
+    setProducts((prev) => prev.filter((product) => product.id !== id))
+  }
+
   return (
     <ProductContext.Provider value={{ products, addProduct, setProducts }}>
       {children}

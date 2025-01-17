@@ -119,3 +119,46 @@ export async function readCostumers(
     throw new Error(`Falha ao buscar clientes: ${error}`)
   }
 }
+
+export async function deleteCostumer(db: SQLiteDatabase, id: number) {
+  try {
+    const costumerRepo = new GenericRepository<ICostumer>('costumers', db)
+    const res = costumerRepo.destroy(id)
+    return res
+  } catch (error) {
+    throw error
+  }
+}
+
+export async function updateCostumer(
+  costumer: IReadCostumerData,
+  db: SQLiteDatabase
+): Promise<void> {
+  const costumerRepo = new GenericRepository<ICostumer>('costumers', db)
+  const costumerLocationRepo = new GenericRepository<ILocation>('locations', db)
+  const costumerContactRepo = new GenericRepository<IContact>('contacts', db)
+
+  try {
+    await costumerRepo.update({ name: costumer.name, id: costumer.id })
+
+    const locationData = {
+      id: costumer.locationId,
+      street: costumer.street,
+      number: costumer.number,
+      neighbourhood: costumer.neighbourhood,
+      city: costumer.city,
+      zipCode: costumer.zipCode
+    }
+    await costumerLocationRepo.update(locationData)
+
+    const contactData = {
+      id: costumer.contactId,
+      name: costumer.contactName,
+      phone: costumer.phone,
+      isWhatsapp: costumer.isWhatsapp
+    }
+    await costumerContactRepo.update(contactData)
+  } catch (error) {
+    throw new Error(`Erro ao atualizar cliente: ${error}`)
+  }
+}

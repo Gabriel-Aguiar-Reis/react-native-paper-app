@@ -14,8 +14,28 @@ export const CostumerProvider: React.FC<{ children: React.ReactNode }> = ({
     setCostumers((prev) => [...prev, newCostumer])
   }
 
+  const updateCostumer = (updatedCostumer: IReadCostumerData) => {
+    setCostumers((prev) =>
+      prev.map((costumer) =>
+        costumer.id === updatedCostumer.id ? updatedCostumer : costumer
+      )
+    )
+  }
+
+  const removeCostumer = (id: number) => {
+    setCostumers((prev) => prev.filter((costumer) => costumer.id !== id))
+  }
+
   return (
-    <CostumerContext.Provider value={{ costumers, addCostumer, setCostumers }}>
+    <CostumerContext.Provider
+      value={{
+        costumers,
+        addCostumer,
+        removeCostumer,
+        updateCostumer,
+        setCostumers
+      }}
+    >
       {children}
     </CostumerContext.Provider>
   )

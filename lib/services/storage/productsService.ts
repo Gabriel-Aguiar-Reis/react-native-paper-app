@@ -45,3 +45,13 @@ export async function readProducts(db: SQLiteDatabase): Promise<IProduct[]> {
     throw new Error(`Falha ao buscar produtos: ${error}`)
   }
 }
+
+export async function deleteProduct(db: SQLiteDatabase, id: number) {
+  try {
+    const productRepo = new GenericRepository<IProduct>('products', db)
+    const res = productRepo.destroy(id)
+    return res
+  } catch (error) {
+    throw error
+  }
+}
