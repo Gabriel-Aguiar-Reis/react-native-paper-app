@@ -1,7 +1,7 @@
 import { useProductContext } from '@/lib/context/ProductContext'
 import { ICategory, ICreateProductData } from '@/lib/interfaces'
 import { readCategories } from '@/lib/services/storage/categoryService'
-import { createProduct } from '@/lib/services/storage/productsService'
+import { createProduct } from '@/lib/services/storage/productService'
 import { styles } from '@/lib/ui'
 import { router } from 'expo-router'
 import { useSQLiteContext } from 'expo-sqlite'

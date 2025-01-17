@@ -19,7 +19,9 @@ export const ProductProvider: React.FC<{ children: React.ReactNode }> = ({
   }
 
   return (
-    <ProductContext.Provider value={{ products, addProduct, setProducts }}>
+    <ProductContext.Provider
+      value={{ products, addProduct, setProducts, removeProduct }}
+    >
       {children}
     </ProductContext.Provider>
   )

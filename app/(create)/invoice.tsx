@@ -11,7 +11,7 @@ import {
 import { readCostumers } from '@/lib/services/storage/costumerService'
 
 import { createInvoice } from '@/lib/services/storage/invoiceService'
-import { readProducts } from '@/lib/services/storage/productsService'
+import { readProducts } from '@/lib/services/storage/productService'
 import { styles } from '@/lib/ui'
 import { router } from 'expo-router'
 import { useSQLiteContext } from 'expo-sqlite'
