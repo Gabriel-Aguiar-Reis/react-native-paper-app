@@ -2,6 +2,7 @@ import {
   ICreateInvoiceData,
   IInvoice,
   IInvoiceProduct,
+  IProduct,
   IReadInvoiceData
 } from '@/lib/interfaces'
 import { readCostumers } from '@/lib/services/storage/costumerService'
@@ -29,16 +30,13 @@ export async function createInvoice(
     })
 
     // Criar produtos relacionados à fatura
-    const invoiceProducts: IInvoiceProduct[] = []
     for (const product of invoice.products) {
       const invoiceProduct = {
         invoiceId,
         productId: product.productId,
         quantity: product.quantity
       }
-
       await invoiceProdRepo.create(invoiceProduct)
-      invoiceProducts.push(invoiceProduct)
     }
 
     // Buscar fatura criada
@@ -66,11 +64,32 @@ export async function createInvoice(
       throw new Error(`Cliente com ID ${invoice.costumerId} não encontrado.`)
     }
 
+    // Buscar produtos relacionados à fatura
+    const products = (await db.getAllAsync(
+      `
+      SELECT
+        i.productId,
+        i.quantity,
+        p.id,
+        p.name,
+        p.price,
+        p.validityMonths,
+        p.categoryName
+      FROM
+        invoice_products i
+      INNER JOIN
+        products p ON i.productId = p.id
+      WHERE
+        i.invoiceId = ?;
+      `,
+      [invoiceId]
+    )) as (IInvoiceProduct & IProduct)[]
+
     // Retornar os dados formatados
     const result: IReadInvoiceData = {
       ...costumer,
       id: resultInvoice.id,
-      products: invoiceProducts,
+      products,
       costumerId: resultInvoice.costumerId,
       totalValue: resultInvoice.totalValue,
       visitDate: resultInvoice.visitDate,
@@ -121,15 +140,22 @@ export async function readInvoices(
       const products = (await db.getAllAsync(
         `
         SELECT
-          productId,
-          quantity
+          i.productId,
+          i.quantity,
+          p.id,
+          p.name,
+          p.price,
+          p.validityMonths,
+          p.categoryName
         FROM
-          invoice_products
+          invoice_products i
+        INNER JOIN
+          products p ON i.productId = p.id
         WHERE
           invoiceId = ?
         `,
         [invoice.id]
-      )) as IInvoiceProduct[]
+      )) as (IInvoiceProduct & IProduct)[]
 
       invoice.products = products
     }
@@ -140,49 +166,12 @@ export async function readInvoices(
   }
 }
 
-// export async function readCostumers(
-//   db: SQLiteDatabase
-// ): Promise<IReadCostumerData[]> {
-//   try {
-//     const result = (await db.getAllAsync(`
-//         SELECT
-//           c.id,
-//           c.name,
-//           l.id AS locationId,
-//           l.street,
-//           l.number,
-//           l.neighbourhood,
-//           l.city,
-//           l.zipCode,
-//           t.id AS contactId,
-//           t.name AS contactName,
-//           t.phone,
-//           t.isWhatsapp
-//         FROM
-//           costumers c
-//         LEFT JOIN
-//           locations l ON c.id = l.costumerId
-//         LEFT JOIN
-//           contacts t ON c.id = t.costumerId
-//       `)) as IReadCostumerData[]
-
-//     const formattedData: IReadCostumerData[] = result.map((row) => ({
-//       id: row.id,
-//       locationId: row.locationId,
-//       contactId: row.contactId,
-//       name: row.name,
-//       street: row.street,
-//       number: row.number,
-//       neighbourhood: row.neighbourhood,
-//       city: row.city,
-//       zipCode: row.zipCode,
-//       contactName: row.contactName,
-//       phone: row.phone,
-//       isWhatsapp: row.isWhatsapp
-//     }))
-
-//     return formattedData
-//   } catch (error) {
-//     throw new Error(`Falha ao buscar clientes: ${error}`)
-//   }
-// }
+export async function deleteInvoice(db: SQLiteDatabase, id: number) {
+  try {
+    const invoiceRepo = new GenericRepository<IInvoice>('invoices', db)
+    const res = invoiceRepo.destroy(id)
+    return res
+  } catch (error) {
+    throw error
+  }
+}

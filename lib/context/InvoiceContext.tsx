@@ -14,8 +14,14 @@ export const InvoiceProvider: React.FC<{ children: React.ReactNode }> = ({
     setInvoices((prev) => [...prev, newInvoice])
   }
 
+  const removeInvoice = (id: number) => {
+    setInvoices((prev) => prev.filter((invoice) => invoice.id !== id))
+  }
+
   return (
-    <InvoiceContext.Provider value={{ invoices, addInvoice, setInvoices }}>
+    <InvoiceContext.Provider
+      value={{ invoices, addInvoice, setInvoices, removeInvoice }}
+    >
       {children}
     </InvoiceContext.Provider>
   )

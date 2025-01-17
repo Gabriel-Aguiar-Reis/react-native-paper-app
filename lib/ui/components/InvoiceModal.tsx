@@ -1,4 +1,4 @@
-import { IInvoice } from '@/lib/interfaces'
+import { IReadInvoiceData } from '@/lib/interfaces'
 import { styles } from '@/lib/ui/styles'
 import React from 'react'
 import { ScrollView, View } from 'react-native'
@@ -11,16 +11,20 @@ import {
   TextInput
 } from 'react-native-paper'
 
-const OrderModal = ({
+const InvoiceModal = ({
   visible,
   onDismiss,
   onConfirmVisit,
-  data
+  onConfirmRemove,
+  data,
+  isRemovable
 }: {
   visible: boolean
   onDismiss: () => void
-  onConfirmVisit: () => void
-  data?: IInvoice
+  onConfirmVisit?: () => void
+  onConfirmRemove?: () => void
+  data?: IReadInvoiceData
+  isRemovable?: boolean
 }) => {
   const TextInputData = {
     mode: 'outlined' as const,
@@ -28,16 +32,16 @@ const OrderModal = ({
     editable: false
   }
   const HeaderData = [
-    { key: '1H', label: 'Nome', value: data?.costumer.name },
+    { key: '1H', label: 'Nome', value: data?.name },
     {
       key: '2H',
       label: 'Contato',
-      value: `${data?.costumer.contactData.name} - ${data?.costumer.contactData.phone}`
+      value: `${data?.contactName} - ${data?.phone}`
     },
     {
       key: '3H',
       label: 'Endereço',
-      value: `${data?.costumer.locationData.street} ${data?.costumer.locationData.number}, ${data?.costumer.locationData.neighbourhood} - ${data?.costumer.locationData.CEP} - ${data?.costumer.locationData.city}`
+      value: `${data?.street} ${data?.number}, ${data?.neighbourhood} - ${data?.zipCode} - ${data?.city}`
     }
   ]
 
@@ -45,18 +49,18 @@ const OrderModal = ({
     {
       key: '1B',
       label: 'Data da Visita',
-      value: `${data?.visitDate.toLocaleDateString('pt-BR')}`
+      value: `${data?.visitDate}`
     },
     {
       key: '2B',
       label: 'Data do Retorno',
-      value: `${data?.returnDate.toLocaleDateString('pt-BR')}`
+      value: `${data?.returnDate}`
     }
   ]
   return (
     <Modal visible={visible} onDismiss={onDismiss}>
       <ScrollView showsVerticalScrollIndicator={true}>
-        <Card style={styles.orderModal}>
+        <Card style={styles.modal}>
           <Card.Title title="Dados do Cliente" titleVariant="titleLarge" />
           <Card.Content style={{ marginBottom: 8 }}>
             {HeaderData.map((header) => (
@@ -117,18 +121,18 @@ const OrderModal = ({
                   >
                     <View>
                       <Text
-                        key={prod.product.id}
+                        key={prod.productId}
                         variant="bodyMedium"
                         style={{ width: 190 }}
                       >
-                        {prod.product.name}
+                        {prod.name}
                       </Text>
                       <Text variant="bodySmall" style={{ marginLeft: 10 }}>
-                        Validade: {prod.product.validityMonths} meses
+                        Validade: {prod.validityMonths} meses
                       </Text>
                     </View>
-                    <Text key={`${prod.product.id}qty`} variant="bodyMedium">
-                      {`${prod.quantity} x ${prod.product.price.toLocaleString(
+                    <Text key={`${prod.id}qty`} variant="bodyMedium">
+                      {`${prod.quantity} x ${prod.price.toLocaleString(
                         'pt-br',
                         {
                           style: 'currency',
@@ -165,9 +169,19 @@ const OrderModal = ({
               justifyContent: 'space-between'
             }}
           >
-            <Button mode="contained" onPress={onConfirmVisit}>
-              Confirmar Visita
-            </Button>
+            {isRemovable ? (
+              <Button mode="contained" onPress={onConfirmRemove}>
+                Remover
+              </Button>
+            ) : (
+              <Button
+                mode="contained"
+                disabled={data?.realized === 1 || data?.realized === 2}
+                onPress={onConfirmVisit}
+              >
+                Confirmar Visita
+              </Button>
+            )}
             <Button mode="contained-tonal" onPress={onDismiss}>
               Fechar
             </Button>
@@ -178,4 +192,4 @@ const OrderModal = ({
   )
 }
 
-export default OrderModal
+export default InvoiceModal

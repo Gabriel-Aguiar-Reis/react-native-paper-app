@@ -1,32 +1,42 @@
-import { Card, Surface, Text } from 'react-native-paper'
+import { Surface } from 'react-native-paper'
 import { useSQLiteContext } from 'expo-sqlite'
-import { readInvoices } from '@/lib/services/storage/invoiceService'
-import { FlatList, View } from 'react-native'
+import {
+  deleteInvoice,
+  readInvoices
+} from '@/lib/services/storage/invoiceService'
 import { IReadInvoiceData } from '@/lib/interfaces'
 import { useEffect, useState } from 'react'
 import { readCostumers } from '@/lib/services/storage/costumerService'
+import { InvoiceFlatList, InvoiceModal } from '@/lib/ui'
+import { useInvoiceContext } from '@/lib/context/InvoiceContext'
 
 const Invoices = () => {
-  const [invoices, setInvoices] = useState<IReadInvoiceData[]>([])
+  const [visible, setVisible] = useState(false)
+  const [selectedInvoice, setSelectedInvoice] = useState<IReadInvoiceData>()
   const db = useSQLiteContext()
+
+  const { invoices, setInvoices, removeInvoice } = useInvoiceContext()
 
   const getInvoices = async () => {
     try {
       const invoicesData = await readInvoices(db)
       const costumersData = await readCostumers(db)
-      invoicesData.map((invoice) => {
-        costumersData.forEach((costumer) => {
-          if (costumer.id === invoice.costumerId) {
-            return {
+
+      const enrichedInvoices = invoicesData.map((invoice) => {
+        const costumer = costumersData.find(
+          (costumer) => costumer.id === invoice.costumerId
+        )
+        return costumer
+          ? {
               ...invoice,
               costumerName: costumer.name,
               contactName: costumer.contactName,
               contactPhone: costumer.phone
             }
-          }
-        })
+          : invoice
       })
-      setInvoices(invoicesData)
+
+      setInvoices(enrichedInvoices) // Atualizando o estado no contexto
     } catch (error) {
       console.error(error)
     }
@@ -36,38 +46,36 @@ const Invoices = () => {
     getInvoices()
   }, [])
 
+  const showModal = (invoice: IReadInvoiceData) => {
+    setSelectedInvoice(invoice)
+    setVisible(true)
+  }
+
+  const hideModal = () => {
+    setVisible(false)
+    setSelectedInvoice(undefined)
+  }
+
+  const handleRemove = async () => {
+    if (!selectedInvoice) return
+    try {
+      await deleteInvoice(db, selectedInvoice.id) // Remoção no banco
+      removeInvoice(selectedInvoice.id) // Atualização no contexto
+      hideModal()
+    } catch (error) {
+      console.error('Erro ao remover o invoice:', error)
+    }
+  }
+
   return (
     <Surface>
-      <FlatList
-        style={{ width: '90%', alignSelf: 'center', padding: 8 }}
-        data={invoices}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <Card mode="outlined" style={{ marginBottom: 12 }}>
-            <Card.Content>
-              <Text variant="headlineSmall">
-                {item.name} - {item.returnDate}
-              </Text>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between'
-                }}
-              >
-                <Text variant="bodySmall" style={{ color: 'gray' }}>
-                  Contato: {item.contactName} - Visita: {item.visitDate}
-                </Text>
-              </View>
-              <Text variant="bodySmall">
-                Valor Total:{' '}
-                {item.totalValue.toLocaleString('pt-BR', {
-                  style: 'currency',
-                  currency: 'BRL'
-                })}
-              </Text>
-            </Card.Content>
-          </Card>
-        )}
+      <InvoiceFlatList invoices={invoices} onPressItem={showModal} />
+      <InvoiceModal
+        visible={visible}
+        onDismiss={hideModal}
+        onConfirmRemove={handleRemove}
+        data={selectedInvoice}
+        isRemovable={true}
       />
     </Surface>
   )

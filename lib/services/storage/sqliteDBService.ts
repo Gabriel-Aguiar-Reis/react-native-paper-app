@@ -50,7 +50,7 @@ export async function initializeDatabase(database: SQLiteDatabase) {
     );
 
     CREATE TABLE IF NOT EXISTS invoice_products (
-      invoiceId INTEGER REFERENCES invoices (id),
+      invoiceId INTEGER REFERENCES invoices (id) ON DELETE CASCADE,
       productId INTEGER REFERENCES products (id),
       quantity INTEGER NOT NULL,
       PRIMARY KEY (invoiceId, productId)

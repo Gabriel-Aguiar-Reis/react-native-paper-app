@@ -6,7 +6,7 @@ interface IInvoice {
   totalValue: number
   visitDate: string
   returnDate: string
-  realized: 0 | 1
+  realized: 0 | 1 | 2
 }
 
 export default IInvoice

@@ -48,6 +48,7 @@ const CreateInvoice = () => {
   const [realized, setRealized] = useState<IInvoice['realized']>(0)
   const [inputDate, setInputDate] = useState('31/12/2012')
   const [isButtonDisabled, setIsButtonDisabled] = useState(true)
+  const [isLoading, setIsLoading] = useState(false)
 
   const [productList, setProductList] = useState<{
     value: string
@@ -89,6 +90,7 @@ const CreateInvoice = () => {
     try {
       const result = await createInvoice(data, db)
       addInvoice(result)
+      setIsLoading(true)
       router.push('/invoices')
     } catch (error) {
       console.error(error)
@@ -373,6 +375,7 @@ const CreateInvoice = () => {
           mode="contained"
           style={{ width: '40%', alignSelf: 'center', marginTop: 10 }}
           disabled={isButtonDisabled}
+          loading={isLoading}
         >
           Criar
         </Button>
