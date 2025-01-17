@@ -30,19 +30,10 @@ const InvoiceFlatList = ({
         <TouchableRipple onPress={() => onPressItem(item)}>
           <Card mode="outlined" style={{ marginBottom: 12 }}>
             <Card.Content>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between'
-                }}
-              >
-                <Text variant="headlineSmall">
-                  {item.name} - {item.returnDate}
-                </Text>
-                <Text style={{ textAlign: 'right', fontWeight: 'bold' }}>
-                  {getRealizedText(item.realized)}
-                </Text>
-              </View>
+              <Text variant="headlineSmall">
+                {item.name} - {item.returnDate}
+              </Text>
+
               <View
                 style={{
                   flexDirection: 'row',
@@ -53,13 +44,23 @@ const InvoiceFlatList = ({
                   Contato: {item.contactName} - Visita: {item.visitDate}
                 </Text>
               </View>
-              <Text variant="bodySmall">
-                Valor Total:{' '}
-                {item.totalValue.toLocaleString('pt-BR', {
-                  style: 'currency',
-                  currency: 'BRL'
-                })}
-              </Text>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between'
+                }}
+              >
+                <Text variant="bodySmall">
+                  Valor Total:{' '}
+                  {item.totalValue.toLocaleString('pt-BR', {
+                    style: 'currency',
+                    currency: 'BRL'
+                  })}
+                </Text>
+                <Text style={{ textAlign: 'right', fontWeight: 'bold' }}>
+                  {getRealizedText(item.realized)}
+                </Text>
+              </View>
             </Card.Content>
           </Card>
         </TouchableRipple>
