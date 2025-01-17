@@ -25,7 +25,12 @@ const Products = () => {
   return (
     <Surface>
       <FlatList
-        style={{ width: '90%', alignSelf: 'center', padding: 8 }}
+        style={{
+          width: '90%',
+          alignSelf: 'center',
+          padding: 8,
+          height: '100%'
+        }}
         data={products}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (

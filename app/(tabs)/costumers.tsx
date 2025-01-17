@@ -26,7 +26,12 @@ const Costumers = () => {
   return (
     <Surface>
       <FlatList
-        style={{ width: '90%', alignSelf: 'center', padding: 8 }}
+        style={{
+          width: '90%',
+          alignSelf: 'center',
+          padding: 8,
+          height: '100%'
+        }}
         data={costumers}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
