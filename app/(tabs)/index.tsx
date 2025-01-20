@@ -16,26 +16,30 @@ const TabsHome = () => {
   const [selectedInvoice, setSelectedInvoice] = useState<IReadInvoiceData>()
   const db = useSQLiteContext()
 
-  const { invoices, setInvoices } = useInvoiceContext()
+  const { invoices, setInvoices, setOriginalInvoices, getSortedInvoices } =
+    useInvoiceContext()
 
   useEffect(() => {
     const fetchInvoices = async () => {
-      const invoicesData = await readInvoices(db)
-      const costumersData = await readCostumers(db)
-      const enrichedInvoices = invoicesData.map((invoice) => {
-        const costumer = costumersData.find(
-          (costumer) => costumer.id === invoice.costumerId
-        )
-        return costumer
-          ? {
-              ...invoice,
-              costumerName: costumer.name,
-              contactName: costumer.contactName,
-              contactPhone: costumer.phone
-            }
-          : invoice
-      })
-      setInvoices(enrichedInvoices)
+      if (invoices.length === 0) {
+        const invoicesData = await readInvoices(db)
+        const costumersData = await readCostumers(db)
+        const enrichedInvoices = invoicesData.map((invoice) => {
+          const costumer = costumersData.find(
+            (costumer) => costumer.id === invoice.costumerId
+          )
+          return costumer
+            ? {
+                ...invoice,
+                costumerName: costumer.name,
+                contactName: costumer.contactName,
+                contactPhone: costumer.phone
+              }
+            : invoice
+        })
+        setInvoices(enrichedInvoices)
+        setOriginalInvoices(enrichedInvoices)
+      }
     }
     fetchInvoices()
   }, [])
@@ -60,7 +64,6 @@ const TabsHome = () => {
 
     try {
       if (action === 'generate') {
-        // Calcula a diferença em dias entre as datas originais
         const [visitDay, visitMonth, visitYear] = selectedInvoice.visitDate
           .split('/')
           .map(Number)
@@ -81,28 +84,23 @@ const TabsHome = () => {
           differenceInMs / (1000 * 60 * 60 * 24)
         )
 
-        // Nova visita começa na data de retorno original
         const newVisitDate = originalReturnDate
 
-        // Nova data de retorno é a nova data de visita + diferença em dias
         const newReturnDate = new Date(
           newVisitDate.getFullYear(),
           newVisitDate.getMonth(),
           newVisitDate.getDate() + differenceInDays
         )
 
-        // Formatar datas para o formato brasileiro
         const formattedNewVisitDate = newVisitDate.toLocaleDateString('pt-BR')
         const formattedNewReturnDate = newReturnDate.toLocaleDateString('pt-BR')
 
-        // Atualize o invoice antigo para "realized = 1"
         await db.execAsync(`
           UPDATE invoices
           SET realized = 1
           WHERE id = ${selectedInvoice.id};
         `)
 
-        // Obtenha os produtos associados ao invoice antigo
         const oldProducts = (await db.getAllAsync(
           `
           SELECT productId, quantity
@@ -112,7 +110,6 @@ const TabsHome = () => {
           [selectedInvoice.id]
         )) as IInvoiceProduct[]
 
-        // Crie um novo invoice
         const newInvoice = (await createInvoice(
           {
             costumerId: selectedInvoice.costumerId,
@@ -125,7 +122,6 @@ const TabsHome = () => {
           db
         )) as IReadInvoiceData
 
-        // Atualize o estado do contexto
         setInvoices((prev) => [
           ...prev.map((invoice) =>
             invoice.id === selectedInvoice.id
@@ -161,9 +157,11 @@ const TabsHome = () => {
     setSelectedInvoice(undefined)
   }
 
+  const sortedInvoices = getSortedInvoices()
+
   return (
     <Surface>
-      <InvoiceFlatList invoices={invoices} onPressItem={showModal} />
+      <InvoiceFlatList invoices={sortedInvoices} onPressItem={showModal} />
       <InvoiceModal
         visible={visible}
         onDismiss={hideModal}
