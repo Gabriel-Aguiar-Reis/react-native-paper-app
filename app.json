@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "expo-react-native-paper",
+    "name": "Santos Extintores",
     "slug": "expo-react-native-paper",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
@@ -13,22 +13,20 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
         "ExpoLocalization_supportsRTL": true
       },
-      "bundleIdentifier": "com.fireextinguisherapp"
+      "bundleIdentifier": "com.santosextintoresapp"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.fireextinguisherapp"
+      "package": "com.santosextintoresapp"
     },
     "web": {
       "bundler": "metro",
