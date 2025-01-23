@@ -1,7 +1,12 @@
 import { useCostumerContext } from '@/lib/context/CostumerContext'
 import { useInvoiceContext } from '@/lib/context/InvoiceContext'
 import { useProductContext } from '@/lib/context/ProductContext'
-import { IProduct, IReadCostumerData, IReadInvoiceData } from '@/lib/interfaces'
+import {
+  IFilters,
+  IProduct,
+  IReadCostumerData,
+  IReadInvoiceData
+} from '@/lib/interfaces'
 import { readCostumers } from '@/lib/services/storage/costumerService'
 import { readProducts } from '@/lib/services/storage/productService'
 import { styles } from '@/lib/ui'
@@ -136,7 +141,7 @@ const Filter = () => {
   }
 
   const filter = () => {
-    const filters = {
+    const filters: IFilters = {
       costumerIds: checkedCostumer ? costumerIds : undefined,
       productIds: checkedProduct ? productIds : undefined,
       realizedIds: checkedRealized ? realizedIds : undefined,

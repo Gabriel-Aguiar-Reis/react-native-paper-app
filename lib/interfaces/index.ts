@@ -5,6 +5,7 @@ import ICostumerContextProps from '@/lib/interfaces/CostumerContextProps'
 import ICreateCostumerData from '@/lib/interfaces/CreateCostumerData'
 import ICreateInvoiceData from '@/lib/interfaces/CreateInvoiceData'
 import ICreateProductData from '@/lib/interfaces/CreateProductData'
+import IFilters from '@/lib/interfaces/Filters'
 import IInvoice from '@/lib/interfaces/Invoice'
 import IInvoiceContextProps from '@/lib/interfaces/InvoiceContextProps'
 import IInvoiceProduct from '@/lib/interfaces/InvoiceProduct'
@@ -23,6 +24,7 @@ export {
   ICreateCostumerData,
   ICreateInvoiceData,
   ICreateProductData,
+  IFilters,
   IInvoice,
   IInvoiceContextProps,
   IInvoiceProduct,

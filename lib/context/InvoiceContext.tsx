@@ -1,5 +1,9 @@
 import React, { createContext, useContext, useState } from 'react'
-import { IInvoiceContextProps, IReadInvoiceData } from '@/lib/interfaces'
+import {
+  IFilters,
+  IInvoiceContextProps,
+  IReadInvoiceData
+} from '@/lib/interfaces'
 
 const InvoiceContext = createContext<IInvoiceContextProps | undefined>(
   undefined
@@ -28,13 +32,7 @@ export const InvoiceProvider: React.FC<{ children: React.ReactNode }> = ({
     setInvoices((prev) => prev.filter((invoice) => invoice.id !== id))
   }
 
-  const filterInvoices = (filters: {
-    costumerIds?: number[]
-    productIds?: number[]
-    realizedIds?: (0 | 1 | 2)[]
-    startDate?: Date
-    endDate?: Date
-  }) => {
+  const filterInvoices = (filters: IFilters) => {
     setCurrentFilters(filters)
     setInvoices(originalInvoices)
     setInvoices((prev) =>
