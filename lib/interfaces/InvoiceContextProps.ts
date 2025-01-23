@@ -7,8 +7,8 @@ interface IInvoiceContextProps {
   removeInvoice: (id: number) => void
   filterInvoices: (filters: IFilters) => void
   resetFilters: () => void
-  originalInvoices: IReadInvoiceData[]
-  setOriginalInvoices: React.Dispatch<React.SetStateAction<IReadInvoiceData[]>>
+  indexInvoices: IReadInvoiceData[]
+  setIndexInvoices: React.Dispatch<React.SetStateAction<IReadInvoiceData[]>>
   currentFilters: IFilters
   setCurrentFilters: React.Dispatch<React.SetStateAction<IFilters>>
 }

@@ -1,9 +1,11 @@
-import React, { createContext, useContext, useState } from 'react'
+import React, { createContext, useContext, useEffect, useState } from 'react'
 import {
   IFilters,
   IInvoiceContextProps,
   IReadInvoiceData
 } from '@/lib/interfaces'
+import { readInvoices } from '@/lib/services/storage/invoiceService'
+import { useSQLiteContext } from 'expo-sqlite'
 
 const InvoiceContext = createContext<IInvoiceContextProps | undefined>(
   undefined
@@ -13,30 +15,27 @@ export const InvoiceProvider: React.FC<{ children: React.ReactNode }> = ({
   children
 }) => {
   const [invoices, setInvoices] = useState<IReadInvoiceData[]>([])
-  const [originalInvoices, setOriginalInvoices] = useState<IReadInvoiceData[]>(
-    []
-  )
-  const [currentFilters, setCurrentFilters] = useState<{
-    costumerIds?: number[]
-    productIds?: number[]
-    realizedIds?: (0 | 1 | 2)[]
-    startDate?: Date
-    endDate?: Date
-  }>({})
+  const [indexInvoices, setIndexInvoices] = useState<IReadInvoiceData[]>([])
+  const [currentFilters, setCurrentFilters] = useState<IFilters>({})
+
+  const db = useSQLiteContext()
 
   const addInvoice = (newInvoice: IReadInvoiceData) => {
     setInvoices((prev) => [...prev, newInvoice])
+    setIndexInvoices((prev) => [...prev, newInvoice])
+    filterInvoices(currentFilters)
   }
 
   const removeInvoice = (id: number) => {
     setInvoices((prev) => prev.filter((invoice) => invoice.id !== id))
+    setIndexInvoices((prev) => prev.filter((invoice) => invoice.id !== id))
+    filterInvoices(currentFilters)
   }
 
   const filterInvoices = (filters: IFilters) => {
     setCurrentFilters(filters)
-    setInvoices(originalInvoices)
-    setInvoices((prev) =>
-      prev.filter((invoice) => {
+    setIndexInvoices(
+      invoices.filter((invoice) => {
         let matches = true
 
         if (filters.costumerIds && filters.costumerIds.length > 0) {
@@ -69,8 +68,19 @@ export const InvoiceProvider: React.FC<{ children: React.ReactNode }> = ({
   }
 
   const resetFilters = () => {
-    setInvoices([...originalInvoices])
+    setIndexInvoices([...invoices])
   }
+
+  useEffect(() => {
+    const fetchInvoices = async () => {
+      if (invoices.length === 0) {
+        const invoicesData = await readInvoices(db)
+        setIndexInvoices(invoicesData)
+        setInvoices(invoicesData)
+      }
+    }
+    fetchInvoices()
+  }, [])
 
   return (
     <InvoiceContext.Provider
@@ -81,8 +91,8 @@ export const InvoiceProvider: React.FC<{ children: React.ReactNode }> = ({
         removeInvoice,
         filterInvoices,
         resetFilters,
-        originalInvoices,
-        setOriginalInvoices,
+        indexInvoices,
+        setIndexInvoices,
         currentFilters,
         setCurrentFilters
       }}

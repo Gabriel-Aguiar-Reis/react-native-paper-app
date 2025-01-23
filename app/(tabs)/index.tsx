@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import { Surface } from 'react-native-paper'
-import { InvoiceModal, ConfirmVisitModal, InvoiceFlatList } from '@/lib/ui'
+import { Surface, Text } from 'react-native-paper'
+import {
+  InvoiceModal,
+  ConfirmVisitModal,
+  InvoiceFlatList,
+  styles
+} from '@/lib/ui'
 import { IInvoiceProduct, IReadInvoiceData } from '@/lib/interfaces'
 import { readCostumers } from '@/lib/services/storage/costumerService'
 import {
@@ -16,32 +21,7 @@ const TabsHome = () => {
   const [selectedInvoice, setSelectedInvoice] = useState<IReadInvoiceData>()
   const db = useSQLiteContext()
 
-  const { invoices, setInvoices, setOriginalInvoices } = useInvoiceContext()
-
-  useEffect(() => {
-    const fetchInvoices = async () => {
-      if (invoices.length === 0) {
-        const invoicesData = await readInvoices(db)
-        const costumersData = await readCostumers(db)
-        const enrichedInvoices = invoicesData.map((invoice) => {
-          const costumer = costumersData.find(
-            (costumer) => costumer.id === invoice.costumerId
-          )
-          return costumer
-            ? {
-                ...invoice,
-                costumerName: costumer.name,
-                contactName: costumer.contactName,
-                contactPhone: costumer.phone
-              }
-            : invoice
-        })
-        setInvoices(enrichedInvoices)
-        setOriginalInvoices(enrichedInvoices)
-      }
-    }
-    fetchInvoices()
-  }, [])
+  const { indexInvoices, setIndexInvoices, setInvoices } = useInvoiceContext()
 
   const showModal = (invoice: IReadInvoiceData) => {
     setSelectedInvoice(invoice)
@@ -121,6 +101,15 @@ const TabsHome = () => {
           db
         )) as IReadInvoiceData
 
+        setIndexInvoices((prev) => [
+          ...prev.map((invoice) =>
+            invoice.id === selectedInvoice.id
+              ? { ...invoice, realized: 1 as const }
+              : invoice
+          ),
+          newInvoice
+        ])
+
         setInvoices((prev) => [
           ...prev.map((invoice) =>
             invoice.id === selectedInvoice.id
@@ -137,6 +126,14 @@ const TabsHome = () => {
           SET realized = 2
           WHERE id = ${selectedInvoice.id};
         `)
+
+        setIndexInvoices((prev) =>
+          prev.map((invoice) =>
+            invoice.id === selectedInvoice.id
+              ? { ...invoice, realized: 2 as const }
+              : invoice
+          )
+        )
 
         setInvoices((prev) =>
           prev.map((invoice) =>
@@ -156,9 +153,17 @@ const TabsHome = () => {
     setSelectedInvoice(undefined)
   }
 
+  if (indexInvoices.length === 0) {
+    return (
+      <Surface style={styles.indexScreen}>
+        <Text>Não há ordens de visita para esta filtragem!</Text>
+      </Surface>
+    )
+  }
+
   return (
     <Surface>
-      <InvoiceFlatList invoices={invoices} onPressItem={showModal} />
+      <InvoiceFlatList invoices={indexInvoices} onPressItem={showModal} />
       <InvoiceModal
         visible={visible}
         onDismiss={hideModal}

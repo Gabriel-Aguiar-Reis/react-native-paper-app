@@ -15,36 +15,7 @@ const Invoices = () => {
   const [selectedInvoice, setSelectedInvoice] = useState<IReadInvoiceData>()
   const db = useSQLiteContext()
 
-  const { invoices, setInvoices, removeInvoice } = useInvoiceContext()
-
-  const getInvoices = async () => {
-    try {
-      const invoicesData = await readInvoices(db)
-      const costumersData = await readCostumers(db)
-
-      const enrichedInvoices = invoicesData.map((invoice) => {
-        const costumer = costumersData.find(
-          (costumer) => costumer.id === invoice.costumerId
-        )
-        return costumer
-          ? {
-              ...invoice,
-              costumerName: costumer.name,
-              contactName: costumer.contactName,
-              contactPhone: costumer.phone
-            }
-          : invoice
-      })
-
-      setInvoices(enrichedInvoices) // Atualizando o estado no contexto
-    } catch (error) {
-      console.error(error)
-    }
-  }
-
-  useEffect(() => {
-    getInvoices()
-  }, [])
+  const { invoices, removeInvoice } = useInvoiceContext()
 
   const showModal = (invoice: IReadInvoiceData) => {
     setSelectedInvoice(invoice)
