@@ -9,7 +9,6 @@ interface IInvoiceContextProps {
   resetFilters: () => void
   originalInvoices: IReadInvoiceData[]
   setOriginalInvoices: React.Dispatch<React.SetStateAction<IReadInvoiceData[]>>
-  getSortedInvoices: () => IReadInvoiceData[]
   currentFilters: IFilters
   setCurrentFilters: React.Dispatch<React.SetStateAction<IFilters>>
 }

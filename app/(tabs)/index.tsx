@@ -16,8 +16,7 @@ const TabsHome = () => {
   const [selectedInvoice, setSelectedInvoice] = useState<IReadInvoiceData>()
   const db = useSQLiteContext()
 
-  const { invoices, setInvoices, setOriginalInvoices, getSortedInvoices } =
-    useInvoiceContext()
+  const { invoices, setInvoices, setOriginalInvoices } = useInvoiceContext()
 
   useEffect(() => {
     const fetchInvoices = async () => {
@@ -157,11 +156,9 @@ const TabsHome = () => {
     setSelectedInvoice(undefined)
   }
 
-  const sortedInvoices = getSortedInvoices()
-
   return (
     <Surface>
-      <InvoiceFlatList invoices={sortedInvoices} onPressItem={showModal} />
+      <InvoiceFlatList invoices={invoices} onPressItem={showModal} />
       <InvoiceModal
         visible={visible}
         onDismiss={hideModal}

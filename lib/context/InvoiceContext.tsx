@@ -72,18 +72,6 @@ export const InvoiceProvider: React.FC<{ children: React.ReactNode }> = ({
     setInvoices([...originalInvoices])
   }
 
-  const getSortedInvoices = () => {
-    return [...invoices].sort((a, b) => {
-      const [dayA, monthA, yearA] = a.returnDate.split('/').map(Number)
-      const [dayB, monthB, yearB] = b.returnDate.split('/').map(Number)
-
-      const dateA = new Date(yearA, monthA - 1, dayA)
-      const dateB = new Date(yearB, monthB - 1, dayB)
-
-      return dateA.getTime() - dateB.getTime()
-    })
-  }
-
   return (
     <InvoiceContext.Provider
       value={{
@@ -95,7 +83,6 @@ export const InvoiceProvider: React.FC<{ children: React.ReactNode }> = ({
         resetFilters,
         originalInvoices,
         setOriginalInvoices,
-        getSortedInvoices,
         currentFilters,
         setCurrentFilters
       }}
