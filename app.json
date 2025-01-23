@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Santos Extintores",
+    "name": "Apollo Extintores",
     "slug": "expo-react-native-paper",
     "version": "1.0.1",
     "orientation": "portrait",
@@ -19,14 +19,14 @@
       "infoPlist": {
         "ExpoLocalization_supportsRTL": true
       },
-      "bundleIdentifier": "com.santosextintoresapp"
+      "bundleIdentifier": "com.apolloextintoresapp"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.santosextintoresapp"
+      "package": "com.apolloextintoresapp"
     },
     "web": {
       "bundler": "metro",
