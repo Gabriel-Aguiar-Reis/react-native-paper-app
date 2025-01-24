@@ -16,6 +16,7 @@ import IReadCostumerData from '@/lib/interfaces/ReadCostumerData'
 import IReadInvoiceData from '@/lib/interfaces/ReadInvoiceData'
 import IReadInvoiceProductData from '@/lib/interfaces/ReadInvoiceProductData'
 import IStoredFilters from '@/lib/interfaces/StoredFilters'
+import IStoredInvoices from '@/lib/interfaces/StoredInvoices'
 
 export {
   ICategory,
@@ -35,5 +36,6 @@ export {
   IReadCostumerData,
   IReadInvoiceData,
   IReadInvoiceProductData,
-  IStoredFilters
+  IStoredFilters,
+  IStoredInvoices
 }

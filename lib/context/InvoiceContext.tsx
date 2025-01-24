@@ -8,6 +8,10 @@ import { readInvoices } from '@/lib/services/storage/invoiceService'
 import { useSQLiteContext } from 'expo-sqlite'
 import { getFilters, setFilters } from '@/lib/services/storage/filterService'
 import { Text } from 'react-native-paper'
+import {
+  getStoredInvoices,
+  setStoredInvoices
+} from '@/lib/services/storage/storedInvoiceService'
 
 const InvoiceContext = createContext<IInvoiceContextProps | undefined>(
   undefined
@@ -22,6 +26,15 @@ export const InvoiceProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const db = useSQLiteContext()
 
+  const handleReorder = async (reorderedInvoices: IReadInvoiceData[]) => {
+    try {
+      setIndexInvoices(reorderedInvoices)
+      await setStoredInvoices(db, reorderedInvoices)
+    } catch (error) {
+      console.error('Erro ao reordenar:', error)
+    }
+  }
+
   const addInvoice = (newInvoice: IReadInvoiceData) => {
     setInvoices((prev) => [...prev, newInvoice])
     setIndexInvoices((prev) => [...prev, newInvoice])
@@ -35,10 +48,11 @@ export const InvoiceProvider: React.FC<{ children: React.ReactNode }> = ({
   }
 
   const filterInvoices = async (filters: IFilters) => {
-    setCurrentFilters(filters)
-    await setFilters(db, filters)
-    setIndexInvoices(
-      invoices.filter((invoice) => {
+    try {
+      setIsLoading(true)
+      setCurrentFilters(filters)
+      await setFilters(db, filters)
+      const filteredInvoices = invoices.filter((invoice) => {
         let matches = true
 
         if (filters.costumerIds && filters.costumerIds.length > 0) {
@@ -67,25 +81,55 @@ export const InvoiceProvider: React.FC<{ children: React.ReactNode }> = ({
 
         return matches
       })
-    )
+      setIndexInvoices(filteredInvoices)
+      await setStoredInvoices(db, filteredInvoices)
+    } catch (error) {
+      console.error('Erro ao aplicar filtros:', error)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const resetFilters = async () => {
-    setIndexInvoices([...invoices])
-    await setFilters(db, {})
+    try {
+      setIsLoading(true)
+      setIndexInvoices([...invoices])
+      await setStoredInvoices(db, invoices)
+      await setFilters(db, {})
+    } catch (error) {
+      console.error('Erro ao resetar filtros:', error)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const [isLoading, setIsLoading] = useState(true)
   const [hasFetchedFilters, setHasFetchedFilters] = useState(false)
+  const [hasFetchedInvoices, setHasFetchedInvoices] = useState(false)
+  const [hasFetchedStoredInvoices, setHasFetchedStoredInvoices] =
+    useState(false)
 
   useEffect(() => {
     const fetchFiltersAndInvoices = async () => {
       try {
-        // Carrega faturas apenas uma vez
-        if (invoices.length === 0) {
+        if (!hasFetchedInvoices) {
           const invoicesData = await readInvoices(db)
-          setInvoices(invoicesData)
-          setIndexInvoices(invoicesData)
+          setInvoices([...invoicesData])
+          setHasFetchedInvoices(true)
+        }
+        if (!hasFetchedStoredInvoices) {
+          const storedInvoices = await getStoredInvoices(db)
+          if (storedInvoices && storedInvoices.value) {
+            const parsedInvoices: IReadInvoiceData[] = JSON.parse(
+              storedInvoices.value
+            )
+            if (parsedInvoices.length === 0) {
+              setIndexInvoices([...invoices])
+            } else {
+              setIndexInvoices([...parsedInvoices])
+            }
+          }
+          setHasFetchedStoredInvoices(true)
         }
 
         // Busca filtros apenas uma vez
@@ -102,7 +146,11 @@ export const InvoiceProvider: React.FC<{ children: React.ReactNode }> = ({
               parsedFilters.endDate = new Date(parsedFilters.endDate)
             }
 
-            filterInvoices(parsedFilters)
+            setCurrentFilters(parsedFilters)
+
+            if (indexInvoices === invoices) {
+              filterInvoices(parsedFilters)
+            }
           }
           setHasFetchedFilters(true)
         }
@@ -130,7 +178,8 @@ export const InvoiceProvider: React.FC<{ children: React.ReactNode }> = ({
         currentFilters,
         setCurrentFilters,
         isLoading,
-        setIsLoading
+        setIsLoading,
+        handleReorder
       }}
     >
       {!isLoading ? children : <Text>Carregando...</Text>}

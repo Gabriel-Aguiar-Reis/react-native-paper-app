@@ -13,6 +13,7 @@ interface IInvoiceContextProps {
   setCurrentFilters: React.Dispatch<React.SetStateAction<IFilters>>
   isLoading: boolean
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>
+  handleReorder: (reorderedInvoices: IReadInvoiceData[]) => Promise<void>
 }
 
 export default IInvoiceContextProps

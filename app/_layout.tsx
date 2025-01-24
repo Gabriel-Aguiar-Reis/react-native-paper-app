@@ -19,6 +19,7 @@ import { initializeDatabase } from '@/lib/services/storage/sqliteDBService'
 import { CostumerProvider } from '@/lib/context/CostumerContext'
 import { ProductProvider } from '@/lib/context/ProductContext'
 import { InvoiceProvider } from '@/lib/context/InvoiceContext'
+import { GestureHandlerRootView } from 'react-native-gesture-handler'
 export { ErrorBoundary } from 'expo-router'
 
 export const unstable_settings = { initialRouteName: '(tabs)' }
@@ -78,41 +79,46 @@ const RootLayoutNav = () => {
     { name: 'product', title: 'Criar Novo Produto' }
   ]
   return (
-    <ThemeProvider
-      value={
-        colorScheme === 'light'
-          ? { ...LightTheme, fonts: NavLightTheme.fonts }
-          : { ...DarkTheme, fonts: NavDarkTheme.fonts }
-      }
-    >
-      <PaperProvider theme={theme}>
-        <SQLiteProvider databaseName="sqlite.db" onInit={initializeDatabase}>
-          <CostumerProvider>
-            <ProductProvider>
-              <InvoiceProvider>
-                <Stack
-                  screenOptions={{
-                    animation: 'slide_from_bottom'
-                  }}
-                >
-                  <Stack.Screen
-                    name="(tabs)"
-                    options={{ headerShown: false }}
-                  />
-                  <Stack.Screen name="filter" options={{ title: 'Filtrar' }} />
-                  {createStack.map((stack) => (
+    <GestureHandlerRootView>
+      <ThemeProvider
+        value={
+          colorScheme === 'light'
+            ? { ...LightTheme, fonts: NavLightTheme.fonts }
+            : { ...DarkTheme, fonts: NavDarkTheme.fonts }
+        }
+      >
+        <PaperProvider theme={theme}>
+          <SQLiteProvider databaseName="sqlite.db" onInit={initializeDatabase}>
+            <CostumerProvider>
+              <ProductProvider>
+                <InvoiceProvider>
+                  <Stack
+                    screenOptions={{
+                      animation: 'slide_from_bottom'
+                    }}
+                  >
                     <Stack.Screen
-                      name={`(create)/${stack.name}`}
-                      options={{ title: stack.title }}
+                      name="(tabs)"
+                      options={{ headerShown: false }}
                     />
-                  ))}
-                </Stack>
-              </InvoiceProvider>
-            </ProductProvider>
-          </CostumerProvider>
-        </SQLiteProvider>
-      </PaperProvider>
-    </ThemeProvider>
+                    <Stack.Screen
+                      name="filter"
+                      options={{ title: 'Filtrar' }}
+                    />
+                    {createStack.map((stack) => (
+                      <Stack.Screen
+                        name={`(create)/${stack.name}`}
+                        options={{ title: stack.title }}
+                      />
+                    ))}
+                  </Stack>
+                </InvoiceProvider>
+              </ProductProvider>
+            </CostumerProvider>
+          </SQLiteProvider>
+        </PaperProvider>
+      </ThemeProvider>
+    </GestureHandlerRootView>
   )
 }
 

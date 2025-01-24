@@ -60,5 +60,10 @@ export async function initializeDatabase(database: SQLiteDatabase) {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       value TEXT
     );
+
+    CREATE TABLE IF NOT EXISTS stored_invoices (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      value TEXT
+    );
   `)
 }

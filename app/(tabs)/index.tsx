@@ -3,7 +3,7 @@ import { Surface, Text } from 'react-native-paper'
 import {
   InvoiceModal,
   ConfirmVisitModal,
-  InvoiceFlatList,
+  DraggableInvoiceFlatList,
   styles
 } from '@/lib/ui'
 import { IInvoiceProduct, IReadInvoiceData } from '@/lib/interfaces'
@@ -17,7 +17,7 @@ const TabsHome = () => {
   const [selectedInvoice, setSelectedInvoice] = useState<IReadInvoiceData>()
   const db = useSQLiteContext()
 
-  const { indexInvoices, setIndexInvoices, setInvoices, isLoading } =
+  const { indexInvoices, setIndexInvoices, setInvoices, handleReorder } =
     useInvoiceContext()
 
   const showModal = (invoice: IReadInvoiceData) => {
@@ -160,7 +160,11 @@ const TabsHome = () => {
 
   return (
     <Surface>
-      <InvoiceFlatList invoices={indexInvoices} onPressItem={showModal} />
+      <DraggableInvoiceFlatList
+        invoices={indexInvoices}
+        onPressItem={showModal}
+        onReorder={handleReorder}
+      />
       <InvoiceModal
         visible={visible}
         onDismiss={hideModal}
