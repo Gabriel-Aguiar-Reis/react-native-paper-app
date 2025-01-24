@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { Surface, Text } from 'react-native-paper'
 import {
   InvoiceModal,
@@ -7,11 +7,7 @@ import {
   styles
 } from '@/lib/ui'
 import { IInvoiceProduct, IReadInvoiceData } from '@/lib/interfaces'
-import { readCostumers } from '@/lib/services/storage/costumerService'
-import {
-  createInvoice,
-  readInvoices
-} from '@/lib/services/storage/invoiceService'
+import { createInvoice } from '@/lib/services/storage/invoiceService'
 import { useSQLiteContext } from 'expo-sqlite'
 import { useInvoiceContext } from '@/lib/context/InvoiceContext'
 
@@ -21,7 +17,8 @@ const TabsHome = () => {
   const [selectedInvoice, setSelectedInvoice] = useState<IReadInvoiceData>()
   const db = useSQLiteContext()
 
-  const { indexInvoices, setIndexInvoices, setInvoices } = useInvoiceContext()
+  const { indexInvoices, setIndexInvoices, setInvoices, isLoading } =
+    useInvoiceContext()
 
   const showModal = (invoice: IReadInvoiceData) => {
     setSelectedInvoice(invoice)
