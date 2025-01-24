@@ -55,5 +55,10 @@ export async function initializeDatabase(database: SQLiteDatabase) {
       quantity INTEGER NOT NULL,
       PRIMARY KEY (invoiceId, productId)
     );
+
+    CREATE TABLE IF NOT EXISTS stored_filters (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      value TEXT
+    );
   `)
 }

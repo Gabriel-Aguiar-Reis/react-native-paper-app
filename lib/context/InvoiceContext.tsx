@@ -6,6 +6,8 @@ import {
 } from '@/lib/interfaces'
 import { readInvoices } from '@/lib/services/storage/invoiceService'
 import { useSQLiteContext } from 'expo-sqlite'
+import { getFilters, setFilters } from '@/lib/services/storage/filterService'
+import { Text } from 'react-native-paper'
 
 const InvoiceContext = createContext<IInvoiceContextProps | undefined>(
   undefined
@@ -32,8 +34,10 @@ export const InvoiceProvider: React.FC<{ children: React.ReactNode }> = ({
     filterInvoices(currentFilters)
   }
 
-  const filterInvoices = (filters: IFilters) => {
+  const filterInvoices = async (filters: IFilters) => {
+    console.log(filters)
     setCurrentFilters(filters)
+    await setFilters(db, filters)
     setIndexInvoices(
       invoices.filter((invoice) => {
         let matches = true
@@ -67,20 +71,51 @@ export const InvoiceProvider: React.FC<{ children: React.ReactNode }> = ({
     )
   }
 
-  const resetFilters = () => {
+  const resetFilters = async () => {
     setIndexInvoices([...invoices])
+    await setFilters(db, {})
   }
 
+  const [isLoading, setIsLoading] = useState(true)
+  const [hasFetchedFilters, setHasFetchedFilters] = useState(false)
+
   useEffect(() => {
-    const fetchInvoices = async () => {
-      if (invoices.length === 0) {
-        const invoicesData = await readInvoices(db)
-        setIndexInvoices(invoicesData)
-        setInvoices(invoicesData)
+    const fetchFiltersAndInvoices = async () => {
+      try {
+        // Carrega faturas apenas uma vez
+        if (invoices.length === 0) {
+          const invoicesData = await readInvoices(db)
+          setInvoices(invoicesData)
+          setIndexInvoices(invoicesData)
+        }
+
+        // Busca filtros apenas uma vez
+        if (!hasFetchedFilters) {
+          const filters = await getFilters(db)
+          if (filters && filters.value) {
+            const parsedFilters: IFilters = JSON.parse(filters.value)
+
+            // Converta os campos de data ao recuperar os filtros
+            if (parsedFilters.startDate) {
+              parsedFilters.startDate = new Date(parsedFilters.startDate)
+            }
+            if (parsedFilters.endDate) {
+              parsedFilters.endDate = new Date(parsedFilters.endDate)
+            }
+
+            filterInvoices(parsedFilters)
+          }
+          setHasFetchedFilters(true)
+        }
+      } catch (error) {
+        console.error('Erro ao buscar dados iniciais:', error)
+      } finally {
+        setIsLoading(false)
       }
     }
-    fetchInvoices()
-  }, [])
+
+    fetchFiltersAndInvoices()
+  })
 
   return (
     <InvoiceContext.Provider
@@ -94,10 +129,12 @@ export const InvoiceProvider: React.FC<{ children: React.ReactNode }> = ({
         indexInvoices,
         setIndexInvoices,
         currentFilters,
-        setCurrentFilters
+        setCurrentFilters,
+        isLoading,
+        setIsLoading
       }}
     >
-      {children}
+      {!isLoading ? children : <Text>Carregando...</Text>}
     </InvoiceContext.Provider>
   )
 }

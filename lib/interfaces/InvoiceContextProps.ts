@@ -11,6 +11,8 @@ interface IInvoiceContextProps {
   setIndexInvoices: React.Dispatch<React.SetStateAction<IReadInvoiceData[]>>
   currentFilters: IFilters
   setCurrentFilters: React.Dispatch<React.SetStateAction<IFilters>>
+  isLoading: boolean
+  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export default IInvoiceContextProps

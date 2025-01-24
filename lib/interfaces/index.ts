@@ -15,6 +15,7 @@ import IProductContextProps from '@/lib/interfaces/ProductContextProps'
 import IReadCostumerData from '@/lib/interfaces/ReadCostumerData'
 import IReadInvoiceData from '@/lib/interfaces/ReadInvoiceData'
 import IReadInvoiceProductData from '@/lib/interfaces/ReadInvoiceProductData'
+import IStoredFilters from '@/lib/interfaces/StoredFilters'
 
 export {
   ICategory,
@@ -33,5 +34,6 @@ export {
   IProductContextProps,
   IReadCostumerData,
   IReadInvoiceData,
-  IReadInvoiceProductData
+  IReadInvoiceProductData,
+  IStoredFilters
 }
