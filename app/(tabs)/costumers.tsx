@@ -23,7 +23,6 @@ const Costumers = () => {
     try {
       const costumerData = await readCostumers(db)
       setCostumers(costumerData)
-      console.log(costumerData)
     } catch (error) {
       console.error(error)
     }
