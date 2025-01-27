@@ -16,6 +16,7 @@ const InvoiceModal = ({
   onDismiss,
   onConfirmVisit,
   onConfirmRemove,
+  onConfirmPayment,
   data,
   isRemovable
 }: {
@@ -23,6 +24,7 @@ const InvoiceModal = ({
   onDismiss: () => void
   onConfirmVisit?: () => void
   onConfirmRemove?: () => void
+  onConfirmPayment?: () => Promise<void>
   data?: IReadInvoiceData
   isRemovable?: boolean
 }) => {
@@ -42,6 +44,14 @@ const InvoiceModal = ({
       key: '3H',
       label: 'Endereço',
       value: `${data?.street} ${data?.number}, ${data?.neighbourhood} - ${data?.zipCode} - ${data?.city}`
+    },
+    {
+      key: '4H',
+      label: 'Método de Pgto. e Prazo',
+      value:
+        data?.deadline === undefined
+          ? `${data?.paymentMethod}`
+          : `${data?.paymentMethod} - Prazo: ${data?.deadline}`
     }
   ]
 
@@ -62,6 +72,13 @@ const InvoiceModal = ({
       <ScrollView showsVerticalScrollIndicator={true}>
         <Card style={styles.modal}>
           <Card.Title title="Dados do Cliente" titleVariant="titleLarge" />
+          <View style={{ marginLeft: 15, marginBottom: 10 }}>
+            {data?.paid === 1 ? (
+              <Text>Pagamento realizado</Text>
+            ) : (
+              <Text style={{ color: 'red' }}>Pagamento não foi realizado</Text>
+            )}
+          </View>
           <Card.Content style={{ marginBottom: 8 }}>
             {HeaderData.map((header) => (
               <TextInput
@@ -179,7 +196,18 @@ const InvoiceModal = ({
                 disabled={data?.realized === 1 || data?.realized === 2}
                 onPress={onConfirmVisit}
               >
-                Confirmar Visita
+                Visita
+              </Button>
+            )}
+            {isRemovable ? (
+              <></>
+            ) : (
+              <Button
+                mode="outlined"
+                disabled={data?.paid === 1}
+                onPress={onConfirmPayment}
+              >
+                Pagamento
               </Button>
             )}
             <Button mode="contained-tonal" onPress={onDismiss}>

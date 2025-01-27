@@ -14,6 +14,7 @@ interface IInvoiceContextProps {
   isLoading: boolean
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>
   handleReorder: (reorderedInvoices: IReadInvoiceData[]) => Promise<void>
+  updatedInvoicePaid: (data: IReadInvoiceData) => Promise<void>
 }
 
 export default IInvoiceContextProps

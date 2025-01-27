@@ -57,9 +57,31 @@ const InvoiceFlatList = ({
                     currency: 'BRL'
                   })}
                 </Text>
-                <Text style={{ textAlign: 'right', fontWeight: 'bold' }}>
-                  {getRealizedText(item.realized)}
-                </Text>
+                <View>
+                  <Text style={{ textAlign: 'right', fontWeight: 'bold' }}>
+                    {getRealizedText(item.realized)}
+                  </Text>
+                  {item.paid === 0 ? (
+                    <Text
+                      style={{
+                        textAlign: 'right',
+                        fontWeight: 'bold',
+                        color: 'red'
+                      }}
+                    >
+                      Pagamento não foi realizado
+                    </Text>
+                  ) : (
+                    <Text
+                      style={{
+                        textAlign: 'right',
+                        fontWeight: 'bold'
+                      }}
+                    >
+                      Pagamento realizado
+                    </Text>
+                  )}
+                </View>
               </View>
             </Card.Content>
           </Card>

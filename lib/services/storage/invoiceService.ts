@@ -26,7 +26,10 @@ export async function createInvoice(
       visitDate: invoice.visitDate,
       returnDate: invoice.returnDate,
       totalValue: invoice.totalValue,
-      realized: invoice.realized
+      realized: invoice.realized,
+      paymentMethod: invoice.paymentMethod,
+      deadline: invoice.deadline,
+      paid: invoice.paid
     })
 
     // Criar produtos relacionados à fatura
@@ -48,7 +51,10 @@ export async function createInvoice(
         visitDate,
         returnDate,
         totalValue,
-        realized
+        realized,
+        paymentMethod,
+        deadline,
+        paid
       FROM
         invoices
       WHERE id = ?;
@@ -94,7 +100,10 @@ export async function createInvoice(
       totalValue: resultInvoice.totalValue,
       visitDate: resultInvoice.visitDate,
       returnDate: resultInvoice.returnDate,
-      realized: resultInvoice.realized
+      realized: resultInvoice.realized,
+      paymentMethod: resultInvoice.paymentMethod,
+      deadline: resultInvoice.deadline,
+      paid: resultInvoice.paid
     }
 
     return result
@@ -115,6 +124,9 @@ export async function readInvoices(
         i.visitDate,
         i.returnDate,
         i.realized,
+        i.paymentMethod,
+        i.deadline,
+        i.paid,
         c.name,
         l.id AS locationId,
         l.street,
@@ -169,8 +181,23 @@ export async function readInvoices(
 export async function deleteInvoice(db: SQLiteDatabase, id: number) {
   try {
     const invoiceRepo = new GenericRepository<IInvoice>('invoices', db)
-    const res = invoiceRepo.destroy(id)
+    const res = await invoiceRepo.destroy(id)
     return res
+  } catch (error) {
+    throw error
+  }
+}
+
+export async function updateInvoicePaid({
+  db,
+  invoice
+}: {
+  db: SQLiteDatabase
+  invoice: IReadInvoiceData
+}) {
+  try {
+    const invoiceRepo = new GenericRepository<IInvoice>('invoices', db)
+    await invoiceRepo.update({ id: invoice.id, paid: 1 as const })
   } catch (error) {
     throw error
   }

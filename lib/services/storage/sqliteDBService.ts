@@ -46,7 +46,10 @@ export async function initializeDatabase(database: SQLiteDatabase) {
       totalValue REAL NOT NULL,
       visitDate TEXT NOT NULL,
       returnDate TEXT NOT NULL,
-      realized INTEGER NOT NULL
+      realized INTEGER NOT NULL,
+      paymentMethod TEXT NOT NULL,
+      deadline TEXT,
+      paid INTEGER NOT NULL -- 0 or 1
     );
 
     CREATE TABLE IF NOT EXISTS invoice_products (

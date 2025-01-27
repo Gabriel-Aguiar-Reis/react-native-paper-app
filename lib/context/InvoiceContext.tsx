@@ -4,7 +4,10 @@ import {
   IInvoiceContextProps,
   IReadInvoiceData
 } from '@/lib/interfaces'
-import { readInvoices } from '@/lib/services/storage/invoiceService'
+import {
+  readInvoices,
+  updateInvoicePaid
+} from '@/lib/services/storage/invoiceService'
 import { useSQLiteContext } from 'expo-sqlite'
 import { getFilters, setFilters } from '@/lib/services/storage/filterService'
 import { Text } from 'react-native-paper'
@@ -103,6 +106,16 @@ export const InvoiceProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }
 
+  const updatedInvoicePaid = async (data: IReadInvoiceData) => {
+    const updatedIndexInvoices = indexInvoices.map((invoice) =>
+      invoice.id === data.id ? { ...invoice, paid: 1 as const } : invoice
+    )
+    await updateInvoicePaid({ db, invoice: data })
+    setIndexInvoices(updatedIndexInvoices)
+    const invoicesData = await readInvoices(db)
+    setInvoices([...invoicesData])
+  }
+
   const [isLoading, setIsLoading] = useState(true)
   const [hasFetchedFilters, setHasFetchedFilters] = useState(false)
   const [hasFetchedInvoices, setHasFetchedInvoices] = useState(false)
@@ -179,7 +192,8 @@ export const InvoiceProvider: React.FC<{ children: React.ReactNode }> = ({
         setCurrentFilters,
         isLoading,
         setIsLoading,
-        handleReorder
+        handleReorder,
+        updatedInvoicePaid
       }}
     >
       {!isLoading ? children : <Text>Carregando...</Text>}

@@ -21,6 +21,7 @@ import { MaskedTextInput } from 'react-native-mask-text'
 import {
   Button,
   Card,
+  Checkbox,
   Divider,
   Surface,
   Text,
@@ -42,8 +43,11 @@ const CreateInvoice = () => {
   const [costumerId, setCostumerId] = useState<IInvoice['costumerId']>(0)
   const [totalValue, setTotalValue] = useState<IInvoice['totalValue']>(0)
   const [visitDate, setVisitDate] = useState<IInvoice['visitDate']>('')
-
   const [returnDate, setReturnDate] = useState<IInvoice['returnDate']>('')
+  const [paymentMethod, setPaymentMethod] =
+    useState<IInvoice['paymentMethod']>('')
+  const [deadline, setDeadline] = useState<IInvoice['deadline']>()
+  const [paid, setPaid] = useState<0 | 1>(0)
 
   const [realized, setRealized] = useState<IInvoice['realized']>(0)
   const [inputDate, setInputDate] = useState('31/12/2012')
@@ -83,7 +87,10 @@ const CreateInvoice = () => {
     totalValue,
     visitDate,
     returnDate,
-    realized
+    realized,
+    paymentMethod,
+    deadline,
+    paid
   }
 
   const handleCreate = async () => {
@@ -187,10 +194,11 @@ const CreateInvoice = () => {
       visitDate.trim().length === 10 && // Data formatada como DD/MM/AAAA
       returnDate.trim().length === 10 &&
       costumerId > 0 &&
-      selectedProducts.length > 0
+      selectedProducts.length > 0 &&
+      paymentMethod.trim().length > 0
 
     setIsButtonDisabled(!isFormValid)
-  }, [visitDate, returnDate, costumerId, selectedProducts])
+  }, [visitDate, returnDate, costumerId, selectedProducts, paymentMethod])
 
   return (
     <Surface style={styles.indexScreen}>
@@ -229,6 +237,50 @@ const CreateInvoice = () => {
             />
           )}
         />
+        <View>
+          <TextInput
+            key={4}
+            label={'Método de Pgto.'}
+            mode="outlined"
+            onChangeText={(e) => setPaymentMethod(e)}
+            inputMode="text"
+            multiline={true}
+          />
+        </View>
+        <View>
+          <TextInput
+            key={5}
+            label={'Prazo de Pgto. (DD/MM/AAAA)'}
+            mode="outlined"
+            onChangeText={(e) => setDeadline(e)}
+            inputMode="tel"
+            multiline={true}
+            render={(props) => (
+              <MaskedTextInput
+                {...props}
+                mask="99/99/9999"
+                onChangeText={(text, rawText) => {
+                  props.onChangeText?.(text)
+                  setReturnDate(text)
+                }}
+              />
+            )}
+          />
+        </View>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center'
+          }}
+        >
+          <Checkbox
+            status={paid ? 'checked' : 'unchecked'}
+            onPress={() => {
+              setPaid(paid === 0 ? 1 : 0)
+            }}
+          />
+          <Text>Pagamento Feito</Text>
+        </View>
         <Text variant="titleLarge" style={{ marginTop: 10 }}>
           Cliente
         </Text>

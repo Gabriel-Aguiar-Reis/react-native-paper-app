@@ -7,7 +7,10 @@ import {
   styles
 } from '@/lib/ui'
 import { IInvoiceProduct, IReadInvoiceData } from '@/lib/interfaces'
-import { createInvoice } from '@/lib/services/storage/invoiceService'
+import {
+  createInvoice,
+  updateInvoicePaid
+} from '@/lib/services/storage/invoiceService'
 import { useSQLiteContext } from 'expo-sqlite'
 import { useInvoiceContext } from '@/lib/context/InvoiceContext'
 
@@ -17,8 +20,13 @@ const TabsHome = () => {
   const [selectedInvoice, setSelectedInvoice] = useState<IReadInvoiceData>()
   const db = useSQLiteContext()
 
-  const { indexInvoices, setIndexInvoices, setInvoices, handleReorder } =
-    useInvoiceContext()
+  const {
+    indexInvoices,
+    setIndexInvoices,
+    setInvoices,
+    handleReorder,
+    updatedInvoicePaid
+  } = useInvoiceContext()
 
   const showModal = (invoice: IReadInvoiceData) => {
     setSelectedInvoice(invoice)
@@ -33,6 +41,13 @@ const TabsHome = () => {
   const handleConfirmVisit = () => {
     setVisible(false)
     setConfirmVisible(true)
+  }
+
+  const handleConfirmPayment = async () => {
+    if (selectedInvoice !== undefined) {
+      updatedInvoicePaid(selectedInvoice)
+    }
+    setVisible(false)
   }
 
   const handleAction = async (action: 'generate' | 'cancel' | 'close') => {
@@ -93,7 +108,10 @@ const TabsHome = () => {
             returnDate: formattedNewReturnDate,
             totalValue: selectedInvoice.totalValue,
             realized: 0,
-            products: oldProducts
+            products: oldProducts,
+            paymentMethod: selectedInvoice.paymentMethod,
+            deadline: selectedInvoice.deadline,
+            paid: 0
           },
           db
         )) as IReadInvoiceData
@@ -169,6 +187,7 @@ const TabsHome = () => {
         visible={visible}
         onDismiss={hideModal}
         onConfirmVisit={handleConfirmVisit}
+        onConfirmPayment={handleConfirmPayment}
         data={selectedInvoice}
       />
       {confirmVisible && (
