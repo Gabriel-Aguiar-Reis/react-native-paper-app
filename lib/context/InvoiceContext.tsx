@@ -114,6 +114,7 @@ export const InvoiceProvider: React.FC<{ children: React.ReactNode }> = ({
     setIndexInvoices(updatedIndexInvoices)
     const invoicesData = await readInvoices(db)
     setInvoices([...invoicesData])
+    setStoredInvoices(db, updatedIndexInvoices)
   }
 
   const [isLoading, setIsLoading] = useState(true)

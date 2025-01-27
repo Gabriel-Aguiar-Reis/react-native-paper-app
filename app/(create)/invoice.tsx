@@ -1,3 +1,4 @@
+import { useCostumerContext } from '@/lib/context/CostumerContext'
 import { useInvoiceContext } from '@/lib/context/InvoiceContext'
 import {
   ICreateInvoiceData,
@@ -16,7 +17,7 @@ import { styles } from '@/lib/ui'
 import { router } from 'expo-router'
 import { useSQLiteContext } from 'expo-sqlite'
 import { useEffect, useState } from 'react'
-import { ScrollView, View } from 'react-native'
+import { Linking, ScrollView, View } from 'react-native'
 import { MaskedTextInput } from 'react-native-mask-text'
 import {
   Button,
@@ -38,7 +39,6 @@ const CreateInvoice = () => {
   >([])
   const [quantity, setQuantity] = useState<IInvoiceProduct['quantity']>(0)
 
-  const [costumers, setCostumers] = useState<IReadCostumerData[]>([])
   const [selectedCostumer, setSelectedCostumer] = useState<IReadCostumerData>()
   const [costumerId, setCostumerId] = useState<IInvoice['costumerId']>(0)
   const [totalValue, setTotalValue] = useState<IInvoice['totalValue']>(0)
@@ -46,8 +46,9 @@ const CreateInvoice = () => {
   const [returnDate, setReturnDate] = useState<IInvoice['returnDate']>('')
   const [paymentMethod, setPaymentMethod] =
     useState<IInvoice['paymentMethod']>('')
-  const [deadline, setDeadline] = useState<IInvoice['deadline']>()
+  const [deadline, setDeadline] = useState<IInvoice['deadline']>('')
   const [paid, setPaid] = useState<0 | 1>(0)
+  const [checked, setChecked] = useState(false)
 
   const [realized, setRealized] = useState<IInvoice['realized']>(0)
   const [inputDate, setInputDate] = useState('31/12/2012')
@@ -80,6 +81,7 @@ const CreateInvoice = () => {
 
   const db = useSQLiteContext()
   const { addInvoice } = useInvoiceContext()
+  const { costumers, setCostumers } = useCostumerContext()
 
   const data: ICreateInvoiceData = {
     products: selectedProducts,
@@ -98,6 +100,32 @@ const CreateInvoice = () => {
       const result = await createInvoice(data, db)
       addInvoice(result)
       setIsLoading(true)
+      const findCostumer = costumers.find(
+        (costumer) => costumer.id === data.costumerId
+      )
+      if (findCostumer?.isWhatsapp === 1) {
+        let textFragment = ''
+        result.products.forEach((product) => {
+          textFragment += `${product.quantity}x ${product.name}\n`
+        })
+        let possibleDeadline = ''
+        if (result.paid === 0) {
+          possibleDeadline = `Seu prazo de pagamento: ${result.deadline}`
+        }
+        const text = `Oi, segue seu resumo do pedido:\n${textFragment}Valor Total: ${result.totalValue.toLocaleString(
+          'pt-br',
+          {
+            style: 'currency',
+            currency: 'BRL'
+          }
+        )}\n${possibleDeadline}`
+
+        const encodedText = encodeURIComponent(text)
+
+        Linking.openURL(
+          `https://wa.me/55${findCostumer?.phone}?text=${encodedText}`
+        )
+      }
       router.push('/invoices')
     } catch (error) {
       console.error(error)
@@ -195,10 +223,20 @@ const CreateInvoice = () => {
       returnDate.trim().length === 10 &&
       costumerId > 0 &&
       selectedProducts.length > 0 &&
-      paymentMethod.trim().length > 0
+      paymentMethod.trim().length > 0 &&
+      deadline !== undefined
+        ? deadline.trim().length >= 0
+        : undefined
 
     setIsButtonDisabled(!isFormValid)
-  }, [visitDate, returnDate, costumerId, selectedProducts, paymentMethod])
+  }, [
+    visitDate,
+    returnDate,
+    costumerId,
+    selectedProducts,
+    paymentMethod,
+    deadline
+  ])
 
   return (
     <Surface style={styles.indexScreen}>
@@ -247,6 +285,21 @@ const CreateInvoice = () => {
             multiline={true}
           />
         </View>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center'
+          }}
+        >
+          <Checkbox
+            status={paid ? 'checked' : 'unchecked'}
+            onPress={() => {
+              setPaid(paid === 0 ? 1 : 0)
+              setChecked(!checked)
+            }}
+          />
+          <Text>Pagamento Feito</Text>
+        </View>
         <View>
           <TextInput
             key={5}
@@ -265,21 +318,8 @@ const CreateInvoice = () => {
                 }}
               />
             )}
+            disabled={checked}
           />
-        </View>
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center'
-          }}
-        >
-          <Checkbox
-            status={paid ? 'checked' : 'unchecked'}
-            onPress={() => {
-              setPaid(paid === 0 ? 1 : 0)
-            }}
-          />
-          <Text>Pagamento Feito</Text>
         </View>
         <Text variant="titleLarge" style={{ marginTop: 10 }}>
           Cliente

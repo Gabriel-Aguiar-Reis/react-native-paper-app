@@ -1,7 +1,7 @@
 import { IReadInvoiceData } from '@/lib/interfaces'
 import { styles } from '@/lib/ui/styles'
 import React from 'react'
-import { ScrollView, View } from 'react-native'
+import { ScrollView, View, Image } from 'react-native'
 import {
   Button,
   Card,
@@ -17,6 +17,7 @@ const InvoiceModal = ({
   onConfirmVisit,
   onConfirmRemove,
   onConfirmPayment,
+  handleMessage,
   data,
   isRemovable
 }: {
@@ -25,6 +26,7 @@ const InvoiceModal = ({
   onConfirmVisit?: () => void
   onConfirmRemove?: () => void
   onConfirmPayment?: () => Promise<void>
+  handleMessage?: () => void
   data?: IReadInvoiceData
   isRemovable?: boolean
 }) => {
@@ -72,11 +74,35 @@ const InvoiceModal = ({
       <ScrollView showsVerticalScrollIndicator={true}>
         <Card style={styles.modal}>
           <Card.Title title="Dados do Cliente" titleVariant="titleLarge" />
-          <View style={{ marginLeft: 15, marginBottom: 10 }}>
+          <View
+            style={{
+              marginLeft: 15,
+              marginBottom: 10,
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center'
+            }}
+          >
             {data?.paid === 1 ? (
               <Text>Pagamento realizado</Text>
             ) : (
               <Text style={{ color: 'red' }}>Pagamento não foi realizado</Text>
+            )}
+            {data?.isWhatsapp === 1 && handleMessage && (
+              <Button mode="outlined" onPress={handleMessage}>
+                <View
+                  style={{
+                    alignItems: 'center',
+                    flexDirection: 'row'
+                  }}
+                >
+                  <Image
+                    source={require('@/assets/images/whatsapp-icon.png')}
+                    style={{ width: 20, height: 20 }}
+                    resizeMode="contain"
+                  />
+                </View>
+              </Button>
             )}
           </View>
           <Card.Content style={{ marginBottom: 8 }}>

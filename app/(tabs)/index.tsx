@@ -7,12 +7,10 @@ import {
   styles
 } from '@/lib/ui'
 import { IInvoiceProduct, IReadInvoiceData } from '@/lib/interfaces'
-import {
-  createInvoice,
-  updateInvoicePaid
-} from '@/lib/services/storage/invoiceService'
+import { createInvoice } from '@/lib/services/storage/invoiceService'
 import { useSQLiteContext } from 'expo-sqlite'
 import { useInvoiceContext } from '@/lib/context/InvoiceContext'
+import { Linking } from 'react-native'
 
 const TabsHome = () => {
   const [visible, setVisible] = useState(false)
@@ -121,8 +119,8 @@ const TabsHome = () => {
             invoice.id === selectedInvoice.id
               ? { ...invoice, realized: 1 as const }
               : invoice
-          ),
-          newInvoice
+          )
+          // newInvoice
         ])
 
         setInvoices((prev) => [
@@ -157,7 +155,6 @@ const TabsHome = () => {
               : invoice
           )
         )
-
         console.log('Fatura cancelada!')
       }
     } catch (error) {
@@ -176,6 +173,12 @@ const TabsHome = () => {
     )
   }
 
+  const handleMessage = () => {
+    const text =
+      'Ol%C3%A1%2C%20tudo%20bem%3F%0A%0AAqui%20%C3%A9%20o%20Santos%2C%20da%20Santos%20Extintores%2C%20estou%20te%20enviando%20essa%20mensagem%20para%20lembrar%20que%20esse%20m%C3%AAs%20irei%20te%20atender%21'
+    Linking.openURL(`https://wa.me/55${selectedInvoice?.phone}?text=${text}`)
+  }
+
   return (
     <Surface>
       <DraggableInvoiceFlatList
@@ -189,6 +192,7 @@ const TabsHome = () => {
         onConfirmVisit={handleConfirmVisit}
         onConfirmPayment={handleConfirmPayment}
         data={selectedInvoice}
+        handleMessage={handleMessage}
       />
       {confirmVisible && (
         <ConfirmVisitModal visible={confirmVisible} onAction={handleAction} />
