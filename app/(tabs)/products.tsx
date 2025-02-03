@@ -1,4 +1,10 @@
-import { Card, Surface, Text, TouchableRipple } from 'react-native-paper'
+import {
+  Card,
+  Surface,
+  Text,
+  TextInput,
+  TouchableRipple
+} from 'react-native-paper'
 import { useSQLiteContext } from 'expo-sqlite'
 import { readProducts } from '@/lib/services/storage/productService'
 import { FlatList, View } from 'react-native'
@@ -12,6 +18,13 @@ const Products = () => {
   const [visible, setVisible] = useState<boolean>(false)
   const { products, setProducts, removeProduct } = useProductContext()
   const [selectedProduct, setSelectedProduct] = useState<IProduct>()
+  const [searchTerm, setSearchTerm] = useState('')
+
+  const currentProducts = products.filter(
+    (product) =>
+      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.categoryName.toLowerCase().includes(searchTerm.toLowerCase())
+  )
   const db = useSQLiteContext()
 
   const showModal = (product: IProduct) => {
@@ -50,6 +63,12 @@ const Products = () => {
 
   return (
     <Surface>
+      <TextInput
+        label="Pesquisar..."
+        mode="outlined"
+        style={{ width: '90%', alignSelf: 'center' }}
+        onChangeText={(e) => setSearchTerm(e)}
+      />
       <FlatList
         style={{
           width: '90%',
@@ -57,7 +76,7 @@ const Products = () => {
           padding: 8,
           height: '100%'
         }}
-        data={products}
+        data={currentProducts}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <TouchableRipple onPress={() => showModal(item)}>

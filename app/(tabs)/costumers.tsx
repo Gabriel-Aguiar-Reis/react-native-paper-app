@@ -8,7 +8,13 @@ import { useSQLiteContext } from 'expo-sqlite'
 import { useEffect, useState } from 'react'
 import { FlatList, Image } from 'react-native'
 import { MaskedText } from 'react-native-mask-text'
-import { Card, Surface, Text, TouchableRipple } from 'react-native-paper'
+import {
+  Card,
+  Surface,
+  Text,
+  TextInput,
+  TouchableRipple
+} from 'react-native-paper'
 import { IReadCostumerData } from '@/lib/interfaces'
 import EditCostumerModal from '@/lib/ui/components/EditCostumerModal'
 
@@ -17,6 +23,14 @@ const Costumers = () => {
     useCostumerContext()
   const [selectedCostumer, setSelectedCostumer] = useState<IReadCostumerData>()
   const [visible, setVisible] = useState<boolean>(false)
+  const [searchTerm, setSearchTerm] = useState('')
+
+  const currentCostumers = costumers.filter(
+    (costumer) =>
+      costumer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      costumer.contactName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      costumer.phone.includes(searchTerm)
+  )
   const db = useSQLiteContext()
 
   const getCostumers = async () => {
@@ -66,6 +80,12 @@ const Costumers = () => {
 
   return (
     <Surface>
+      <TextInput
+        label="Pesquisar..."
+        mode="outlined"
+        style={{ width: '90%', alignSelf: 'center' }}
+        onChangeText={(e) => setSearchTerm(e)}
+      />
       <FlatList
         style={{
           width: '90%',
@@ -73,7 +93,7 @@ const Costumers = () => {
           padding: 8,
           height: '100%'
         }}
-        data={costumers}
+        data={currentCostumers}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <TouchableRipple onPress={() => showModal(item)}>

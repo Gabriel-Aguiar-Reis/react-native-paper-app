@@ -1,4 +1,4 @@
-import { Surface } from 'react-native-paper'
+import { Surface, TextInput } from 'react-native-paper'
 import { useSQLiteContext } from 'expo-sqlite'
 import {
   deleteInvoice,
@@ -17,6 +17,17 @@ const Invoices = () => {
 
   const { invoices, removeInvoice } = useInvoiceContext()
 
+  const [searchTerm, setSearchTerm] = useState('')
+
+  const currentInvoices = invoices.filter(
+    (invoice) =>
+      invoice.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      invoice.contactName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      invoice.cpf?.includes(searchTerm) ||
+      invoice.cnpj?.includes(searchTerm) ||
+      invoice.visitDate.includes(searchTerm) ||
+      invoice.returnDate.includes(searchTerm)
+  )
   const showModal = (invoice: IReadInvoiceData) => {
     setSelectedInvoice(invoice)
     setVisible(true)
@@ -40,7 +51,13 @@ const Invoices = () => {
 
   return (
     <Surface>
-      <InvoiceFlatList invoices={invoices} onPressItem={showModal} />
+      <TextInput
+        label="Pesquisar..."
+        mode="outlined"
+        style={{ width: '90%', alignSelf: 'center' }}
+        onChangeText={(e) => setSearchTerm(e)}
+      />
+      <InvoiceFlatList invoices={currentInvoices} onPressItem={showModal} />
       <InvoiceModal
         visible={visible}
         onDismiss={hideModal}
