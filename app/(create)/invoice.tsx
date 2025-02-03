@@ -222,21 +222,10 @@ const CreateInvoice = () => {
       visitDate.trim().length === 10 && // Data formatada como DD/MM/AAAA
       returnDate.trim().length === 10 &&
       costumerId > 0 &&
-      selectedProducts.length > 0 &&
-      paymentMethod.trim().length > 0 &&
-      deadline !== undefined
-        ? deadline.trim().length >= 0
-        : undefined
+      selectedProducts.length > 0
 
     setIsButtonDisabled(!isFormValid)
-  }, [
-    visitDate,
-    returnDate,
-    costumerId,
-    selectedProducts,
-    paymentMethod,
-    deadline
-  ])
+  }, [visitDate, returnDate, costumerId, selectedProducts])
 
   return (
     <Surface style={styles.indexScreen}>

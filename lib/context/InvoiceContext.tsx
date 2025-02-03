@@ -129,6 +129,7 @@ export const InvoiceProvider: React.FC<{ children: React.ReactNode }> = ({
         if (!hasFetchedInvoices) {
           const invoicesData = await readInvoices(db)
           setInvoices([...invoicesData])
+          console.log([...invoicesData])
           setHasFetchedInvoices(true)
         }
         if (!hasFetchedStoredInvoices) {

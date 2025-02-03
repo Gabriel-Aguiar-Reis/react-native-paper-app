@@ -51,7 +51,7 @@ const InvoiceModal = ({
       key: '4H',
       label: 'Método de Pgto. e Prazo',
       value:
-        data?.deadline === undefined
+        data?.deadline === ''
           ? `${data?.paymentMethod}`
           : `${data?.paymentMethod} - Prazo: ${data?.deadline}`
     }
@@ -83,11 +83,16 @@ const InvoiceModal = ({
               alignItems: 'center'
             }}
           >
-            {data?.paid === 1 ? (
-              <Text>Pagamento realizado</Text>
-            ) : (
-              <Text style={{ color: 'red' }}>Pagamento não foi realizado</Text>
-            )}
+            {data?.paid === 1 &&
+              data?.paymentMethod &&
+              data?.paymentMethod !== '' && <Text>Pagamento realizado</Text>}
+            {data?.paid === 0 &&
+              data?.paymentMethod &&
+              data?.paymentMethod !== '' && (
+                <Text style={{ color: 'red' }}>
+                  Pagamento não foi realizado
+                </Text>
+              )}
             {data?.isWhatsapp === 1 && handleMessage && (
               <Button mode="outlined" onPress={handleMessage}>
                 <View

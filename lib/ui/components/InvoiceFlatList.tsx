@@ -61,17 +61,20 @@ const InvoiceFlatList = ({
                   <Text style={{ textAlign: 'right', fontWeight: 'bold' }}>
                     {getRealizedText(item.realized)}
                   </Text>
-                  {item.paid === 0 ? (
-                    <Text
-                      style={{
-                        textAlign: 'right',
-                        fontWeight: 'bold',
-                        color: 'red'
-                      }}
-                    >
-                      Pagamento não foi realizado
-                    </Text>
-                  ) : (
+                  {item.paid === 0 &&
+                    item.paymentMethod &&
+                    item.paymentMethod !== '' && (
+                      <Text
+                        style={{
+                          textAlign: 'right',
+                          fontWeight: 'bold',
+                          color: 'red'
+                        }}
+                      >
+                        Pagamento não foi realizado
+                      </Text>
+                    )}
+                  {item.paid === 1 && (
                     <Text
                       style={{
                         textAlign: 'right',

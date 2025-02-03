@@ -23,6 +23,7 @@ const Costumers = () => {
     try {
       const costumerData = await readCostumers(db)
       setCostumers(costumerData)
+      console.log(costumerData)
     } catch (error) {
       console.error(error)
     }
@@ -81,7 +82,15 @@ const Costumers = () => {
                 <Text variant="headlineSmall">{item.name}</Text>
                 <Text variant="bodyLarge" numberOfLines={2}>
                   {item.contactName} -{' '}
-                  <MaskedText mask="(99) 99999-9999">{item.phone}</MaskedText>{' '}
+                  <MaskedText
+                    mask={
+                      item.phone.length === 11
+                        ? '(99) 99999-9999'
+                        : '(99) 9999-9999'
+                    }
+                  >
+                    {item.phone}
+                  </MaskedText>{' '}
                   {item.isWhatsapp === 1 && (
                     <Image
                       source={require('@/assets/images/whatsapp-icon.png')}

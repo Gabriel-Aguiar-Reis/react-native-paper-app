@@ -7,9 +7,9 @@ interface IInvoice {
   visitDate: string
   returnDate: string
   realized: 0 | 1 | 2
-  paymentMethod: string
+  paymentMethod: string | undefined
   deadline: string | undefined
-  paid: 0 | 1
+  paid: 0 | 1 | undefined
 }
 
 export default IInvoice

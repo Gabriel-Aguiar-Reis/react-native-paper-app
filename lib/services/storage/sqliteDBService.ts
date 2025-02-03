@@ -6,7 +6,9 @@ export async function initializeDatabase(database: SQLiteDatabase) {
     
     CREATE TABLE IF NOT EXISTS costumers (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      name TEXT NOT NULL
+      name TEXT NOT NULL,
+      cpf TEXT,
+      cnpj TEXT
     );
 
     CREATE TABLE IF NOT EXISTS locations (
@@ -47,9 +49,9 @@ export async function initializeDatabase(database: SQLiteDatabase) {
       visitDate TEXT NOT NULL,
       returnDate TEXT NOT NULL,
       realized INTEGER NOT NULL,
-      paymentMethod TEXT NOT NULL,
+      paymentMethod TEXT,
       deadline TEXT,
-      paid INTEGER NOT NULL -- 0 or 1
+      paid INTEGER -- 0 or 1
     );
 
     CREATE TABLE IF NOT EXISTS invoice_products (

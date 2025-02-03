@@ -23,6 +23,8 @@ import {
 
 const CreateCostumer = () => {
   const [name, setName] = useState<ICostumer['name']>('')
+  const [cpf, setCpf] = useState<ICostumer['cpf']>('')
+  const [cnpj, setCnpj] = useState<ICostumer['cnpj']>('')
   const [street, setStreet] = useState<ILocation['street']>('')
   const [houseNumber, setHouseNumber] = useState<ILocation['number']>(0)
   const [neigh, setNeigh] = useState<ILocation['neighbourhood']>('')
@@ -32,6 +34,8 @@ const CreateCostumer = () => {
   const [phone, setPhone] = useState<IContact['phone']>('')
   const [isWhatsapp, setIsWhatsapp] = useState<IContact['isWhatsapp']>(0)
   const [isButtonDisabled, setIsButtonDisabled] = useState(true)
+  const [checked, setChecked] = useState<'cpf' | 'cnpj'>('cpf')
+  const [checked2, setChecked2] = useState<'celphone' | 'landline'>('celphone')
 
   const db = useSQLiteContext()
 
@@ -46,7 +50,9 @@ const CreateCostumer = () => {
     zipCode,
     contactName,
     phone,
-    isWhatsapp: isWhatsapp
+    isWhatsapp: isWhatsapp,
+    cpf,
+    cnpj
   }
 
   const handleCreate = async () => {
@@ -61,14 +67,15 @@ const CreateCostumer = () => {
 
   useEffect(() => {
     const isFormValid =
-      name.trim() !== '' &&
-      street.trim() !== '' &&
-      houseNumber > 0 &&
-      neigh.trim() !== '' &&
-      city.trim() !== '' &&
-      zipCode.trim().length === 8 && // Ex.: "99999-999"
-      contactName.trim() !== '' &&
-      phone.trim().length === 11 // Ex.: "(99) 99999-9999"
+      (name.trim() !== '' &&
+        street.trim() !== '' &&
+        houseNumber > 0 &&
+        neigh.trim() !== '' &&
+        city.trim() !== '' &&
+        zipCode.trim().length === 8 && // Ex.: "99999-999"
+        contactName.trim() !== '' &&
+        phone.trim().length === 11) ||
+      phone.trim().length === 10 // Ex.: "(99) 99999-9999", "(99) 9999-9999"
 
     setIsButtonDisabled(!isFormValid)
   }, [name, street, houseNumber, neigh, city, zipCode, contactName, phone])
@@ -83,6 +90,71 @@ const CreateCostumer = () => {
           onChangeText={(e) => setName(e)}
           multiline={true}
         />
+        <View style={{ flexDirection: 'row' }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <RadioButton
+              value="cpf"
+              status={checked === 'cpf' ? 'checked' : 'unchecked'}
+              onPress={() => setChecked('cpf')}
+            />
+            <Text style={{ marginLeft: 5 }}>CPF</Text>
+          </View>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              marginLeft: 5
+            }}
+          >
+            <RadioButton
+              value="cnpj"
+              status={checked === 'cnpj' ? 'checked' : 'unchecked'}
+              onPress={() => setChecked('cnpj')}
+            />
+            <Text style={{ marginLeft: 5 }}>CNPJ</Text>
+          </View>
+        </View>
+        {checked === 'cpf' ? (
+          <TextInput
+            key={10}
+            value={cpf}
+            label={'CPF'}
+            inputMode="tel"
+            mode="outlined"
+            render={(props) => (
+              <MaskedTextInput
+                {...props}
+                value={cpf}
+                mask="999.999.999-99"
+                onChangeText={(_, rawText) => {
+                  props.onChangeText?.(rawText)
+                  setCpf(rawText)
+                }}
+              />
+            )}
+            multiline={true}
+          />
+        ) : (
+          <TextInput
+            key={11}
+            value={cnpj}
+            label={'CNPJ'}
+            inputMode="tel"
+            mode="outlined"
+            render={(props) => (
+              <MaskedTextInput
+                {...props}
+                value={cnpj}
+                mask="99.999.999/9999-99"
+                onChangeText={(_, rawText) => {
+                  props.onChangeText?.(rawText)
+                  setCnpj(rawText)
+                }}
+              />
+            )}
+            multiline={true}
+          />
+        )}
         <Text variant="titleLarge" style={{ marginVertical: 10 }}>
           Dados de Endereço
         </Text>
@@ -157,21 +229,58 @@ const CreateCostumer = () => {
           onChangeText={(e) => setContactName(e)}
           multiline={true}
         />
+        <View style={{ flexDirection: 'row' }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <RadioButton
+              value="celphone"
+              status={checked2 === 'celphone' ? 'checked' : 'unchecked'}
+              onPress={() => setChecked2('celphone')}
+            />
+            <Text style={{ marginLeft: 5 }}>Celular</Text>
+          </View>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              marginLeft: 5
+            }}
+          >
+            <RadioButton
+              value="landline"
+              status={checked2 === 'landline' ? 'checked' : 'unchecked'}
+              onPress={() => setChecked2('landline')}
+            />
+            <Text style={{ marginLeft: 5 }}>Telefone Fixo</Text>
+          </View>
+        </View>
         <TextInput
           key={8}
+          value={phone}
           label={'Telefone'}
           inputMode="tel"
-          render={(props) => (
-            <MaskedTextInput
-              {...props}
-              value={phone}
-              mask="(99) 99999-9999"
-              onChangeText={(_, rawText) => {
-                props.onChangeText?.(rawText)
-                setPhone(rawText)
-              }}
-            />
-          )}
+          render={(props) =>
+            checked2 === 'celphone' ? (
+              <MaskedTextInput
+                {...props}
+                value={phone}
+                mask="(99) 99999-9999"
+                onChangeText={(_, rawText) => {
+                  props.onChangeText?.(rawText)
+                  setPhone(rawText)
+                }}
+              />
+            ) : (
+              <MaskedTextInput
+                {...props}
+                value={phone}
+                mask="(99) 9999-9999"
+                onChangeText={(_, rawText) => {
+                  props.onChangeText?.(rawText)
+                  setPhone(rawText)
+                }}
+              />
+            )
+          }
           mode="outlined"
           multiline={true}
         />

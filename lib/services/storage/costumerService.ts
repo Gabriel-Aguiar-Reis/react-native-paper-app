@@ -17,7 +17,9 @@ export async function createCostumer(
   const costumerContactRepo = new GenericRepository<IContact>('contacts', db)
   try {
     const { insertedRowId: costumerId } = await costumerRepo.create({
-      name: costumer.name
+      name: costumer.name,
+      cpf: costumer.cpf,
+      cnpj: costumer.cnpj
     })
 
     const locationData = {
@@ -81,6 +83,8 @@ export async function readCostumers(
       SELECT
         c.id,
         c.name,
+        c.cpf,
+        c.cnpj,
         l.id AS locationId,
         l.street,
         l.number,
@@ -101,6 +105,8 @@ export async function readCostumers(
 
     const formattedData: IReadCostumerData[] = result.map((row) => ({
       id: row.id,
+      cpf: row.cpf,
+      cnpj: row.cnpj,
       locationId: row.locationId,
       contactId: row.contactId,
       name: row.name,
@@ -139,7 +145,12 @@ export async function updateCostumer(
   const costumerContactRepo = new GenericRepository<IContact>('contacts', db)
 
   try {
-    await costumerRepo.update({ name: costumer.name, id: costumer.id })
+    await costumerRepo.update({
+      name: costumer.name,
+      cpf: costumer.cpf,
+      cnpj: costumer.cnpj,
+      id: costumer.id
+    })
 
     const locationData = {
       id: costumer.locationId,
