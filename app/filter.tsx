@@ -3,6 +3,7 @@ import { useInvoiceContext } from '@/lib/context/InvoiceContext'
 import { useProductContext } from '@/lib/context/ProductContext'
 import {
   IFilters,
+  IInvoice,
   IProduct,
   IReadCostumerData,
   IReadInvoiceData
@@ -26,7 +27,10 @@ import { ListItem } from 'react-native-paper-select/lib/typescript/interface/pap
 registerTranslation('pt', pt)
 
 const Filter = () => {
-  const [checkedRangeDates, setCheckedRangeDates] = useState(false)
+  const [checkedRangeVisitDates, setCheckedRangeVisitDates] = useState(false)
+  const [checkedRangeReturnDates, setCheckedRangeReturnDates] = useState(false)
+  const [checkedPaid, setCheckedPaid] = useState(false)
+  const [paidIds, setPaidIds] = useState<IInvoice['paid'][]>([])
   const [costumerIds, setCostumerIds] = useState<IReadCostumerData['id'][]>([])
   const [checkedCostumer, setCheckedCostumer] = useState(false)
   const [productIds, setProductIds] = useState<IProduct['id'][]>([])
@@ -39,7 +43,15 @@ const Filter = () => {
     startDate: undefined,
     endDate: undefined
   })
+  const [range2, setRange2] = React.useState<{
+    startDate: Date | undefined
+    endDate: Date | undefined
+  }>({
+    startDate: undefined,
+    endDate: undefined
+  })
   const [open, setOpen] = React.useState(false)
+  const [open2, setOpen2] = React.useState(false)
   const [realizedIds, setRealizedIds] = useState<
     IReadInvoiceData['realized'][]
   >([])
@@ -54,12 +66,24 @@ const Filter = () => {
     setOpen(false)
   }, [setOpen])
 
+  const onDismiss2 = React.useCallback(() => {
+    setOpen2(false)
+  }, [setOpen2])
+
   const onConfirm = React.useCallback(
     ({ startDate, endDate }: { startDate: any; endDate: any }) => {
       setOpen(false)
       setRange({ startDate, endDate })
     },
     [setOpen, setRange]
+  )
+
+  const onConfirm2 = React.useCallback(
+    ({ startDate, endDate }: { startDate: any; endDate: any }) => {
+      setOpen2(false)
+      setRange2({ startDate, endDate })
+    },
+    [setOpen2, setRange2]
   )
 
   const [productList, setProductList] = useState<{
@@ -96,6 +120,20 @@ const Filter = () => {
       { _id: '1', value: 'Realizada' },
       { _id: '0', value: 'Pendente' },
       { _id: '2', value: 'Cancelada' }
+    ],
+    selectedList: [],
+    error: ''
+  })
+  const [paidList, setPaidList] = useState<{
+    value: string
+    list: ListItem[]
+    selectedList: ListItem[]
+    error: string
+  }>({
+    value: '',
+    list: [
+      { _id: '0', value: 'Sem Pagamento' },
+      { _id: '1', value: 'Pago' }
     ],
     selectedList: [],
     error: ''
@@ -145,8 +183,11 @@ const Filter = () => {
       costumerIds: checkedCostumer ? costumerIds : undefined,
       productIds: checkedProduct ? productIds : undefined,
       realizedIds: checkedRealized ? realizedIds : undefined,
-      startDate: checkedRangeDates ? range.startDate : undefined,
-      endDate: checkedRangeDates ? range.endDate : undefined
+      startDateVisit: checkedRangeReturnDates ? range.startDate : undefined,
+      endDateVisit: checkedRangeReturnDates ? range.endDate : undefined,
+      startDateReturn: checkedRangeReturnDates ? range2.startDate : undefined,
+      endDateReturn: checkedRangeReturnDates ? range2.endDate : undefined,
+      paidIds: checkedPaid ? paidIds : undefined
     }
 
     setIsLoadingFilter(true)
@@ -167,13 +208,22 @@ const Filter = () => {
       setProductIds(currentFilters.productIds || [])
       setCheckedRealized(!!currentFilters.realizedIds?.length)
       setRealizedIds(currentFilters.realizedIds || [])
-      setCheckedRangeDates(
-        !!currentFilters.startDate && !!currentFilters.endDate
+      setCheckedRangeReturnDates(
+        !!currentFilters.startDateReturn && !!currentFilters.endDateReturn
+      )
+      setCheckedRangeVisitDates(
+        !!currentFilters.startDateVisit && !!currentFilters.endDateVisit
       )
       setRange({
-        startDate: currentFilters.startDate || undefined,
-        endDate: currentFilters.endDate || undefined
+        startDate: currentFilters.startDateReturn || undefined,
+        endDate: currentFilters.endDateReturn || undefined
       })
+      setRange2({
+        startDate: currentFilters.startDateVisit || undefined,
+        endDate: currentFilters.endDateVisit || undefined
+      })
+      setCheckedPaid(!!currentFilters.paidIds?.length)
+      setPaidIds(currentFilters.paidIds || [])
 
       // Atualiza costumerList
       const selectedCostumers = costumerList.list.filter((item) =>
@@ -203,8 +253,22 @@ const Filter = () => {
         value: selectedRealized.map((item) => item.value).join(', '),
         selectedList: selectedRealized
       }))
+      const selectedPaid = paidList.list.filter((item) =>
+        currentFilters.paidIds?.map(String).includes(item._id)
+      )
+      setPaidList((prev) => ({
+        ...prev,
+        value: selectedPaid.map((item) => item.value).join(', '),
+        selectedList: selectedPaid
+      }))
     }
-  }, [currentFilters, costumerList.list, productList.list, realizedList.list])
+  }, [
+    currentFilters,
+    costumerList.list,
+    productList.list,
+    realizedList.list,
+    paidList.list
+  ])
 
   return (
     <Surface style={styles.indexScreen}>
@@ -217,14 +281,38 @@ const Filter = () => {
           }}
         >
           <Checkbox
-            status={checkedRangeDates ? 'checked' : 'unchecked'}
+            status={checkedRangeVisitDates ? 'checked' : 'unchecked'}
             onPress={() => {
-              setCheckedRangeDates(!checkedRangeDates)
+              setCheckedRangeVisitDates(!checkedRangeVisitDates)
             }}
           />
-          <Text>Período de datas</Text>
+          <Text>Data de Visita</Text>
           <Button
-            disabled={!checkedRangeDates}
+            disabled={!checkedRangeVisitDates}
+            onPress={() => setOpen(true)}
+            uppercase={false}
+            mode="outlined"
+          >
+            Selecione as datas
+          </Button>
+        </View>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginTop: 10
+          }}
+        >
+          <Checkbox
+            status={checkedRangeReturnDates ? 'checked' : 'unchecked'}
+            onPress={() => {
+              setCheckedRangeReturnDates(!checkedRangeReturnDates)
+            }}
+          />
+          <Text>Data de Retorno</Text>
+          <Button
+            disabled={!checkedRangeReturnDates}
             onPress={() => setOpen(true)}
             uppercase={false}
             mode="outlined"
@@ -350,6 +438,45 @@ const Filter = () => {
             />
           </View>
         </View>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between'
+          }}
+        >
+          <Checkbox
+            status={checkedPaid ? 'checked' : 'unchecked'}
+            onPress={() => {
+              setCheckedPaid(!checkedPaid)
+            }}
+          />
+          <Text>Pgto.</Text>
+          <View style={{ width: '60%' }}>
+            <PaperSelect
+              disabled={!checkedPaid}
+              label="Selecione Estado"
+              value={paidList.value}
+              onSelection={(value: any) => {
+                setPaidList({
+                  ...paidList,
+                  value: value.text,
+                  selectedList: value.selectedList,
+                  error: ''
+                })
+
+                const selectedIds = value.selectedList.map((item: any) =>
+                  Number(item._id)
+                )
+                setPaidIds(selectedIds)
+              }}
+              arrayList={[...paidList.list]}
+              selectedArrayList={paidList.selectedList}
+              errorText={paidList.error}
+              multiEnable={true}
+            />
+          </View>
+        </View>
         <Button
           loading={isLoadingFilter}
           onPress={filter}
@@ -359,8 +486,10 @@ const Filter = () => {
             !(
               checkedCostumer ||
               checkedProduct ||
-              checkedRangeDates ||
-              checkedRealized
+              checkedRangeReturnDates ||
+              checkedRangeVisitDates ||
+              checkedRealized ||
+              checkedPaid
             )
           }
         >
@@ -388,6 +517,15 @@ const Filter = () => {
         startDate={range.startDate}
         endDate={range.endDate}
         onConfirm={onConfirm}
+      />
+      <DatePickerModal
+        locale="pt"
+        mode="range"
+        visible={open2}
+        onDismiss={onDismiss2}
+        startDate={range2.startDate}
+        endDate={range2.endDate}
+        onConfirm={onConfirm2}
       />
     </Surface>
   )

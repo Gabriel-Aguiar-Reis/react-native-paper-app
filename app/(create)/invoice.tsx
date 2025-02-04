@@ -47,7 +47,7 @@ const CreateInvoice = () => {
   const [paymentMethod, setPaymentMethod] =
     useState<IInvoice['paymentMethod']>('')
   const [deadline, setDeadline] = useState<IInvoice['deadline']>('')
-  const [paid, setPaid] = useState<0 | 1>(0)
+  const [paid, setPaid] = useState<0 | 1 | undefined>()
   const [checked, setChecked] = useState(false)
 
   const [realized, setRealized] = useState<IInvoice['realized']>(0)
@@ -106,19 +106,43 @@ const CreateInvoice = () => {
       if (findCostumer?.isWhatsapp === 1) {
         let textFragment = ''
         result.products.forEach((product) => {
-          textFragment += `${product.quantity}x ${product.name}\n`
+          textFragment += `${product.quantity}x ${product.name} - ${product.price.toLocaleString(
+            'pt-br',
+            {
+              style: 'currency',
+              currency: 'BRL'
+            }
+          )}\n`
         })
         let possibleDeadline = ''
         if (result.paid === 0) {
-          possibleDeadline = `Seu prazo de pagamento: ${result.deadline}`
+          possibleDeadline = `--------------------------------\nSeu prazo de pagamento: ${result.deadline}\n`
         }
-        const text = `Oi, segue seu resumo do pedido:\n${textFragment}Valor Total: ${result.totalValue.toLocaleString(
-          'pt-br',
-          {
-            style: 'currency',
-            currency: 'BRL'
-          }
-        )}\n${possibleDeadline}`
+        const head = `Oi, sou o Santos, da Santos Extintores.\n\n`
+        const line2 = 'Segue o resumo do seu pedido:\n\n'
+        const breakline = '--------------------------------\n'
+        const costumerData =
+          (result.cpf !== '' && `NOME: ${result.name}\nCPF: ${result.cpf}\n`) ||
+          (result.cnpj !== '' &&
+            `NOME: ${result.name}\nCNPJ: ${result.cnpj}\n`) ||
+          `NOME: ${result.name}\n`
+        const products = textFragment
+        const totalValue = `TOTAL: ${result.totalValue.toLocaleString('pt-br', {
+          style: 'currency',
+          currency: 'BRL'
+        })}\n`
+        const deadline = `${possibleDeadline}`
+        const text =
+          head +
+          line2 +
+          breakline +
+          costumerData +
+          breakline +
+          products +
+          breakline +
+          totalValue +
+          deadline +
+          breakline
 
         const encodedText = encodeURIComponent(text)
 

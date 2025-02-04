@@ -23,7 +23,7 @@ const InvoiceFlatList = ({
   }
   return (
     <FlatList
-      style={{ width: '90%', alignSelf: 'center', padding: 8, height: '100%' }}
+      style={{ width: '90%', alignSelf: 'center', padding: 8, height: '92.5%' }}
       data={invoices}
       keyExtractor={(item) => item.id.toString()}
       renderItem={({ item }) => (

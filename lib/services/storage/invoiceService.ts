@@ -128,6 +128,8 @@ export async function readInvoices(
         i.deadline,
         i.paid,
         c.name,
+        c.cpf,
+        c.cnpj,
         l.id AS locationId,
         l.street,
         l.number,

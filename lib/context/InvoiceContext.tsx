@@ -72,14 +72,28 @@ export const InvoiceProvider: React.FC<{ children: React.ReactNode }> = ({
           matches = matches && filters.realizedIds.includes(invoice.realized)
         }
 
-        if (filters.startDate && filters.endDate) {
+        if (filters.startDateReturn && filters.endDateReturn) {
           const invoiceDate = new Date(
             invoice.returnDate.split('/').reverse().join('-')
           )
           matches =
             matches &&
-            invoiceDate >= filters.startDate &&
-            invoiceDate <= filters.endDate
+            invoiceDate >= filters.startDateReturn &&
+            invoiceDate <= filters.endDateReturn
+        }
+
+        if (filters.startDateVisit && filters.endDateVisit) {
+          const invoiceDate = new Date(
+            invoice.visitDate.split('/').reverse().join('-')
+          )
+          matches =
+            matches &&
+            invoiceDate >= filters.startDateVisit &&
+            invoiceDate <= filters.endDateVisit
+        }
+
+        if (filters.paidIds && filters.paidIds.length > 0) {
+          matches = matches && filters.paidIds.includes(invoice.paid)
         }
 
         return matches
@@ -154,11 +168,23 @@ export const InvoiceProvider: React.FC<{ children: React.ReactNode }> = ({
             const parsedFilters: IFilters = JSON.parse(filters.value)
 
             // Converta os campos de data ao recuperar os filtros
-            if (parsedFilters.startDate) {
-              parsedFilters.startDate = new Date(parsedFilters.startDate)
+            if (parsedFilters.startDateVisit) {
+              parsedFilters.startDateVisit = new Date(
+                parsedFilters.startDateVisit
+              )
             }
-            if (parsedFilters.endDate) {
-              parsedFilters.endDate = new Date(parsedFilters.endDate)
+            if (parsedFilters.endDateVisit) {
+              parsedFilters.endDateVisit = new Date(parsedFilters.endDateVisit)
+            }
+            if (parsedFilters.startDateReturn) {
+              parsedFilters.startDateReturn = new Date(
+                parsedFilters.startDateReturn
+              )
+            }
+            if (parsedFilters.endDateReturn) {
+              parsedFilters.endDateReturn = new Date(
+                parsedFilters.endDateReturn
+              )
             }
 
             setCurrentFilters(parsedFilters)

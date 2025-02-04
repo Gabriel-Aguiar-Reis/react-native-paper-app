@@ -50,6 +50,8 @@ export async function createCostumer(
       SELECT
         c.id,
         c.name,
+        c.cpf,
+        c.cnpj,
         l.id AS locationId,
         l.street,
         l.number,

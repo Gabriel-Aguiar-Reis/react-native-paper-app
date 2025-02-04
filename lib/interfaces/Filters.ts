@@ -6,8 +6,11 @@ interface IFilters {
   costumerIds?: ICostumer['id'][]
   productIds?: IProduct['id'][]
   realizedIds?: IInvoice['realized'][]
-  startDate?: Date
-  endDate?: Date
+  startDateVisit?: Date
+  endDateVisit?: Date
+  startDateReturn?: Date
+  endDateReturn?: Date
+  paidIds?: IInvoice['paid'][]
 }
 
 export default IFilters

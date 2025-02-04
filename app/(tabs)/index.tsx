@@ -11,6 +11,7 @@ import { createInvoice } from '@/lib/services/storage/invoiceService'
 import { useSQLiteContext } from 'expo-sqlite'
 import { useInvoiceContext } from '@/lib/context/InvoiceContext'
 import { Linking } from 'react-native'
+import { setStoredInvoices } from '@/lib/services/storage/storedInvoiceService'
 
 const TabsHome = () => {
   const [visible, setVisible] = useState(false)
@@ -53,6 +54,7 @@ const TabsHome = () => {
 
     try {
       if (action === 'generate') {
+        console.log(selectedInvoice)
         const [visitDay, visitMonth, visitYear] = selectedInvoice.visitDate
           .split('/')
           .map(Number)
@@ -109,7 +111,7 @@ const TabsHome = () => {
             products: oldProducts,
             paymentMethod: selectedInvoice.paymentMethod,
             deadline: selectedInvoice.deadline,
-            paid: 0
+            paid: undefined
           },
           db
         )) as IReadInvoiceData
@@ -131,6 +133,58 @@ const TabsHome = () => {
           ),
           newInvoice
         ])
+
+        if (selectedInvoice.isWhatsapp === 1) {
+          let textFragment = ''
+          selectedInvoice.products.forEach((product) => {
+            textFragment += `${product.quantity}x ${product.name} - ${product.price.toLocaleString(
+              'pt-br',
+              {
+                style: 'currency',
+                currency: 'BRL'
+              }
+            )}\n`
+          })
+          let possibleDeadline = ''
+          if (selectedInvoice.paid === 0) {
+            possibleDeadline = `--------------------------------\nSeu prazo de pagamento: ${selectedInvoice.deadline}\n`
+          }
+          const head = `Oi, sou o Santos, da Santos Extintores.\n\n`
+          const line2 = 'Segue o resumo do seu pedido:\n\n'
+          const breakline = '--------------------------------\n'
+          const costumerData =
+            (selectedInvoice.cpf !== undefined &&
+              `NOME: ${selectedInvoice.name}\nCPF: ${selectedInvoice.cpf}\n`) ||
+            (selectedInvoice.cnpj !== undefined &&
+              `NOME: ${selectedInvoice.name}\nCNPJ: ${selectedInvoice.cnpj}\n`) ||
+            `NOME: ${selectedInvoice.name}\n`
+          const products = textFragment
+          const totalValue = `TOTAL: ${selectedInvoice.totalValue.toLocaleString(
+            'pt-br',
+            {
+              style: 'currency',
+              currency: 'BRL'
+            }
+          )}\n`
+          const deadline = `${possibleDeadline}`
+          const text =
+            head +
+            line2 +
+            breakline +
+            costumerData +
+            breakline +
+            products +
+            breakline +
+            totalValue +
+            deadline +
+            breakline
+
+          const encodedText = encodeURIComponent(text)
+
+          Linking.openURL(
+            `https://wa.me/55${selectedInvoice?.phone}?text=${encodedText}`
+          )
+        }
 
         console.log('Novo invoice criado com sucesso!')
       } else if (action === 'cancel') {
