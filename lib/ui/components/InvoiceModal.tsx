@@ -14,6 +14,7 @@ import {
 const InvoiceModal = ({
   visible,
   onDismiss,
+  onOpenEdit,
   onConfirmVisit,
   onConfirmRemove,
   onConfirmPayment,
@@ -23,6 +24,7 @@ const InvoiceModal = ({
 }: {
   visible: boolean
   onDismiss: () => void
+  onOpenEdit?: () => void
   onConfirmVisit?: () => void
   onConfirmRemove?: () => void
   onConfirmPayment?: () => Promise<void>
@@ -238,11 +240,18 @@ const InvoiceModal = ({
                 disabled={data?.paid === 1}
                 onPress={onConfirmPayment}
               >
-                Pagamento
+                Pgto.
               </Button>
             )}
+            <Button
+              mode="contained-tonal"
+              onPress={onOpenEdit}
+              disabled={data?.realized === 1 || data?.realized === 2}
+            >
+              Editar
+            </Button>
             <Button mode="contained-tonal" onPress={onDismiss}>
-              Fechar
+              Sair
             </Button>
           </Card.Actions>
         </Card>

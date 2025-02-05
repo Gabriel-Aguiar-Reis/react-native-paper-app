@@ -1,9 +1,10 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Surface, Text } from 'react-native-paper'
 import {
   InvoiceModal,
   ConfirmVisitModal,
   DraggableInvoiceFlatList,
+  EditInvoiceModal,
   styles
 } from '@/lib/ui'
 import { IInvoiceProduct, IReadInvoiceData } from '@/lib/interfaces'
@@ -233,6 +234,28 @@ const TabsHome = () => {
     Linking.openURL(`https://wa.me/55${selectedInvoice?.phone}?text=${text}`)
   }
 
+  const [visibleEdit, setVisibleEdit] = useState(false)
+
+  const onDismissEdit = () => {
+    setVisibleEdit(false)
+  }
+
+  const openEdit = () => {
+    setVisibleEdit(true)
+  }
+
+  useEffect(() => {
+    if (selectedInvoice) {
+      const updatedInvoice = indexInvoices.find(
+        (inv) => inv.id === selectedInvoice.id
+      )
+      if (updatedInvoice) {
+        setSelectedInvoice(updatedInvoice)
+      }
+    }
+    console.log(indexInvoices)
+  }, [indexInvoices])
+
   return (
     <Surface>
       <DraggableInvoiceFlatList
@@ -243,13 +266,22 @@ const TabsHome = () => {
       <InvoiceModal
         visible={visible}
         onDismiss={hideModal}
+        onOpenEdit={openEdit}
         onConfirmVisit={handleConfirmVisit}
         onConfirmPayment={handleConfirmPayment}
         data={selectedInvoice}
         handleMessage={handleMessage}
       />
-      {confirmVisible && (
+      {confirmVisible && selectedInvoice && (
         <ConfirmVisitModal visible={confirmVisible} onAction={handleAction} />
+      )}
+      {visibleEdit && selectedInvoice && (
+        <EditInvoiceModal
+          visible={visibleEdit}
+          onDismiss={onDismissEdit}
+          onEdit={onDismissEdit}
+          invoice={selectedInvoice}
+        />
       )}
     </Surface>
   )

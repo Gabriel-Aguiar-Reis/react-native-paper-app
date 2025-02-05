@@ -1,16 +1,15 @@
 import {
   ICreateInvoiceData,
   IInvoice,
-  IInvoiceProduct,
-  IProduct,
-  IReadCostumerData
+  IReadCostumerData,
+  IReadInvoiceProductData
 } from '@/lib/interfaces'
 
 interface IReadInvoiceData
   extends Omit<ICreateInvoiceData, 'products'>,
     IReadCostumerData {
   id: IInvoice['id']
-  products: (Omit<IInvoiceProduct, 'invoiceId'> & IProduct)[]
+  products: IReadInvoiceProductData[]
 }
 
 export default IReadInvoiceData

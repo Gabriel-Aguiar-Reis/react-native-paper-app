@@ -3,7 +3,8 @@ import {
   IInvoice,
   IInvoiceProduct,
   IProduct,
-  IReadInvoiceData
+  IReadInvoiceData,
+  IReadInvoiceProductData
 } from '@/lib/interfaces'
 import { readCostumers } from '@/lib/services/storage/costumerService'
 import { GenericRepository } from '@/lib/services/storage/genericRepository'
@@ -74,9 +75,9 @@ export async function createInvoice(
     const products = (await db.getAllAsync(
       `
       SELECT
+        i.id,
         i.productId,
         i.quantity,
-        p.id,
         p.name,
         p.price,
         p.validityMonths,
@@ -89,7 +90,7 @@ export async function createInvoice(
         i.invoiceId = ?;
       `,
       [invoiceId]
-    )) as (IInvoiceProduct & IProduct)[]
+    )) as IReadInvoiceProductData[]
 
     // Retornar os dados formatados
     const result: IReadInvoiceData = {
@@ -200,6 +201,48 @@ export async function updateInvoicePaid({
   try {
     const invoiceRepo = new GenericRepository<IInvoice>('invoices', db)
     await invoiceRepo.update({ id: invoice.id, paid: 1 as const })
+  } catch (error) {
+    throw error
+  }
+}
+
+export async function updateInvoicePayment({
+  db,
+  invoice
+}: {
+  db: SQLiteDatabase
+  invoice: IReadInvoiceData
+}) {
+  try {
+    const invoiceRepo = new GenericRepository<IInvoice>('invoices', db)
+    await invoiceRepo.update({
+      id: invoice.id,
+      paymentMethod: invoice.paymentMethod,
+      deadline: invoice.deadline,
+      paid: invoice.paid
+    })
+    console.log('Invoice atualizado com sucesso')
+  } catch (error) {
+    throw error
+  }
+}
+
+export async function updateInvoiceTotalValue({
+  db,
+  id,
+  totalValue
+}: {
+  db: SQLiteDatabase
+  id: IReadInvoiceData['id']
+  totalValue: IReadInvoiceData['totalValue']
+}) {
+  try {
+    const invoiceRepo = new GenericRepository<IInvoice>('invoices', db)
+    await invoiceRepo.update({
+      id,
+      totalValue
+    })
+    console.log('Invoice atualizado com sucesso')
   } catch (error) {
     throw error
   }
