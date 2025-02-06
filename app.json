@@ -2,7 +2,7 @@
   "expo": {
     "name": "Apollo Extintores",
     "slug": "expo-react-native-paper",
-    "version": "1.0.3",
+    "version": "1.1.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
