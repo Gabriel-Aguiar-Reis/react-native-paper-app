@@ -87,7 +87,7 @@ const CreateCostumer = () => {
           key={1}
           label={'Nome da Empresa'}
           mode="outlined"
-          onChangeText={(e) => setName(e)}
+          onChangeText={(e) => setName(e.trim())}
           multiline={true}
         />
         <View style={{ flexDirection: 'row' }}>
@@ -127,8 +127,8 @@ const CreateCostumer = () => {
                 value={cpf}
                 mask="999.999.999-99"
                 onChangeText={(_, rawText) => {
-                  props.onChangeText?.(rawText)
-                  setCpf(rawText)
+                  props.onChangeText?.(rawText.trim())
+                  setCpf(rawText.trim())
                 }}
               />
             )}
@@ -147,8 +147,8 @@ const CreateCostumer = () => {
                 value={cnpj}
                 mask="99.999.999/9999-99"
                 onChangeText={(_, rawText) => {
-                  props.onChangeText?.(rawText)
-                  setCnpj(rawText)
+                  props.onChangeText?.(rawText.trim())
+                  setCnpj(rawText.trim())
                 }}
               />
             )}
@@ -165,7 +165,7 @@ const CreateCostumer = () => {
               key={2}
               label={'Rua'}
               mode="outlined"
-              onChangeText={(e) => setStreet(e)}
+              onChangeText={(e) => setStreet(e.trim())}
               multiline={true}
             />
           </View>
@@ -175,7 +175,7 @@ const CreateCostumer = () => {
               label={'N.º'}
               mode="outlined"
               inputMode="tel"
-              onChangeText={(e) => setHouseNumber(Number(e))}
+              onChangeText={(e) => setHouseNumber(Number(e.trim()))}
               multiline={true}
             />
           </View>
@@ -184,7 +184,7 @@ const CreateCostumer = () => {
           key={4}
           label={'Bairro'}
           mode="outlined"
-          onChangeText={(e) => setNeigh(e)}
+          onChangeText={(e) => setNeigh(e.trim())}
           multiline={true}
         />
         <View style={{ flex: 1, flexDirection: 'row' }}>
@@ -193,7 +193,7 @@ const CreateCostumer = () => {
               key={5}
               label={'Cidade'}
               mode="outlined"
-              onChangeText={(e) => setCity(e)}
+              onChangeText={(e) => setCity(e.trim())}
               multiline={true}
             />
           </View>
@@ -209,8 +209,8 @@ const CreateCostumer = () => {
                   value={zipCode}
                   mask="99999-999"
                   onChangeText={(_, rawText) => {
-                    props.onChangeText?.(rawText)
-                    setZipCode(rawText)
+                    props.onChangeText?.(rawText.trim())
+                    setZipCode(rawText.trim())
                   }}
                 />
               )}
@@ -226,7 +226,7 @@ const CreateCostumer = () => {
           key={7}
           label={'Nome de Contato'}
           mode="outlined"
-          onChangeText={(e) => setContactName(e)}
+          onChangeText={(e) => setContactName(e.trim())}
           multiline={true}
         />
         <View style={{ flexDirection: 'row' }}>
@@ -265,8 +265,8 @@ const CreateCostumer = () => {
                 value={phone}
                 mask="(99) 99999-9999"
                 onChangeText={(_, rawText) => {
-                  props.onChangeText?.(rawText)
-                  setPhone(rawText)
+                  props.onChangeText?.(rawText.trim())
+                  setPhone(rawText.trim())
                 }}
               />
             ) : (
@@ -275,8 +275,8 @@ const CreateCostumer = () => {
                 value={phone}
                 mask="(99) 9999-9999"
                 onChangeText={(_, rawText) => {
-                  props.onChangeText?.(rawText)
-                  setPhone(rawText)
+                  props.onChangeText?.(rawText.trim())
+                  setPhone(rawText.trim())
                 }}
               />
             )

@@ -101,7 +101,7 @@ const CreateProduct = () => {
           key={1}
           label={'Nome do Produto'}
           mode="outlined"
-          onChangeText={(e) => setProName(e)}
+          onChangeText={(e) => setProName(e.trim())}
           multiline={true}
         />
         <TextInput
@@ -117,8 +117,8 @@ const CreateProduct = () => {
                 precision: 2
               }}
               onChangeText={(text, rawText) => {
-                props.onChangeText?.(rawText)
-                setPrice(Number(text.replace(',', '.')))
+                props.onChangeText?.(rawText.trim())
+                setPrice(Number(text.replace(',', '.').trim()))
               }}
               keyboardType="decimal-pad"
             />
@@ -130,7 +130,7 @@ const CreateProduct = () => {
           key={3}
           label={'Meses de Validade'}
           mode="outlined"
-          onChangeText={(e) => setValidityMonths(Number(e))}
+          onChangeText={(e) => setValidityMonths(Number(e.trim()))}
           inputMode="numeric"
           multiline={true}
         />
@@ -153,7 +153,7 @@ const CreateProduct = () => {
               key={4}
               label={'Nome da Nova Categoria'}
               mode="outlined"
-              onChangeText={(e) => setCategoryName(e)}
+              onChangeText={(e) => setCategoryName(e.trim())}
               multiline={true}
               disabled={!checked}
             />

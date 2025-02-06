@@ -32,6 +32,7 @@ import {
 import { PaperSelect } from 'react-native-paper-select'
 import { ListItem } from 'react-native-paper-select/lib/typescript/interface/paperSelect.interface'
 import { setStoredInvoices } from '@/lib/services/storage/storedInvoiceService'
+import { MaskedTextInput } from 'react-native-mask-text'
 
 const EditInvoiceModal = ({
   visible,
@@ -321,11 +322,21 @@ const EditInvoiceModal = ({
             <TextInput
               key={2}
               value={deadline}
-              label={'Prazo'}
+              label={'Prazo de Pgto. (DD/MM/AAAA)'}
               mode="outlined"
-              onChangeText={(e) => setDeadline(e)}
+              onChangeText={(e) => setDeadline(e.trim())}
               multiline={true}
               inputMode="tel"
+              render={(props) => (
+                <MaskedTextInput
+                  {...props}
+                  mask="99/99/9999"
+                  onChangeText={(text, rawText) => {
+                    props.onChangeText?.(text.trim())
+                    setDeadline(text.trim())
+                  }}
+                />
+              )}
             />
             <View
               style={{

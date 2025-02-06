@@ -258,15 +258,15 @@ const CreateInvoice = () => {
           key={1}
           label={'Data da Visita (DD/MM/AAAA)'}
           mode="outlined"
-          onChangeText={(e) => setVisitDate(e)}
+          onChangeText={(e) => setVisitDate(e.trim())}
           inputMode="tel"
           render={(props) => (
             <MaskedTextInput
               {...props}
               mask="99/99/9999"
               onChangeText={(text, rawText) => {
-                props.onChangeText?.(text)
-                setVisitDate(text)
+                props.onChangeText?.(text.trim())
+                setVisitDate(text.trim())
               }}
             />
           )}
@@ -275,15 +275,15 @@ const CreateInvoice = () => {
           key={2}
           label={'Data de Retorno (DD/MM/AAAA)'}
           mode="outlined"
-          onChangeText={(e) => setReturnDate(e)}
+          onChangeText={(e) => setReturnDate(e.trim())}
           inputMode="tel"
           render={(props) => (
             <MaskedTextInput
               {...props}
               mask="99/99/9999"
               onChangeText={(text, rawText) => {
-                props.onChangeText?.(text)
-                setReturnDate(text)
+                props.onChangeText?.(text.trim())
+                setReturnDate(text.trim())
               }}
             />
           )}
@@ -293,7 +293,7 @@ const CreateInvoice = () => {
             key={4}
             label={'Método de Pgto.'}
             mode="outlined"
-            onChangeText={(e) => setPaymentMethod(e)}
+            onChangeText={(e) => setPaymentMethod(e.trim())}
             inputMode="text"
             multiline={true}
           />
@@ -307,7 +307,7 @@ const CreateInvoice = () => {
           <Checkbox
             status={paid ? 'checked' : 'unchecked'}
             onPress={() => {
-              setPaid(paid === 0 ? 1 : 0)
+              setPaid(paid === 0 || paid === undefined ? 1 : 0)
               setChecked(!checked)
             }}
           />
@@ -318,7 +318,7 @@ const CreateInvoice = () => {
             key={5}
             label={'Prazo de Pgto. (DD/MM/AAAA)'}
             mode="outlined"
-            onChangeText={(e) => setDeadline(e)}
+            onChangeText={(e) => setDeadline(e.trim())}
             inputMode="tel"
             multiline={true}
             render={(props) => (
@@ -326,8 +326,8 @@ const CreateInvoice = () => {
                 {...props}
                 mask="99/99/9999"
                 onChangeText={(text, rawText) => {
-                  props.onChangeText?.(text)
-                  setReturnDate(text)
+                  props.onChangeText?.(text.trim())
+                  setDeadline(text.trim())
                 }}
               />
             )}
@@ -410,7 +410,7 @@ const CreateInvoice = () => {
               key={3}
               label={'Qte.'}
               mode="outlined"
-              onChangeText={(e) => setQuantity(Number(e))}
+              onChangeText={(e) => setQuantity(Number(e.trim()))}
               inputMode="tel"
               multiline={true}
             />

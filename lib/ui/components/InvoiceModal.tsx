@@ -2,6 +2,7 @@ import { IReadInvoiceData } from '@/lib/interfaces'
 import { styles } from '@/lib/ui/styles'
 import React from 'react'
 import { ScrollView, View, Image } from 'react-native'
+import { mask } from 'react-native-mask-text'
 import {
   Button,
   Card,
@@ -37,17 +38,24 @@ const InvoiceModal = ({
     multiline: true,
     editable: false
   }
+
+  const formattedPhone = data?.phone ? mask(data.phone, '(99) 99999-9999') : ''
+  const formattedZipCode = data?.zipCode ? mask(data.zipCode, '99999-999') : ''
+  const formattedDeadline = data?.deadline
+    ? mask(data.deadline, '99/99/9999')
+    : ''
+
   const HeaderData = [
     { key: '1H', label: 'Nome', value: data?.name },
     {
       key: '2H',
       label: 'Contato',
-      value: `${data?.contactName} - ${data?.phone}`
+      value: `${data?.contactName} - ${formattedPhone}`
     },
     {
       key: '3H',
       label: 'Endereço',
-      value: `${data?.street} ${data?.number}, ${data?.neighbourhood} - ${data?.zipCode} - ${data?.city}`
+      value: `${data?.street} ${data?.number}, ${data?.neighbourhood}, ${data?.city} - ${formattedZipCode}`
     },
     {
       key: '4H',
