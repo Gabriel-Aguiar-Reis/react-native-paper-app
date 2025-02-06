@@ -21,6 +21,7 @@ import { ProductProvider } from '@/lib/context/ProductContext'
 import { InvoiceProvider } from '@/lib/context/InvoiceContext'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 export { ErrorBoundary } from 'expo-router'
+import { StatusBar } from 'expo-status-bar'
 
 export const unstable_settings = { initialRouteName: '(tabs)' }
 
@@ -92,6 +93,9 @@ const RootLayoutNav = () => {
             <CostumerProvider>
               <ProductProvider>
                 <InvoiceProvider>
+                  <StatusBar
+                    style={colorScheme === 'light' ? 'dark' : 'light'}
+                  />
                   <Stack
                     screenOptions={{
                       animation: 'slide_from_bottom'
