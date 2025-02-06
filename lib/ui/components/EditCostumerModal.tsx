@@ -43,7 +43,7 @@ const EditCostumerModal = ({
   const [contactName, setContactName] = useState<IContact['name']>('')
   const [phone, setPhone] = useState<IContact['phone']>('')
   const [isWhatsapp, setIsWhatsapp] = useState<IContact['isWhatsapp']>(0)
-  const [checked, setChecked] = useState<'cpf' | 'cnpj'>('cpf')
+  const [checked, setChecked] = useState<'cpf' | 'cnpj'>()
   const [checked2, setChecked2] = useState<'celphone' | 'landline'>('celphone')
 
   const updatedData: ICreateCostumerData = {
@@ -81,11 +81,24 @@ const EditCostumerModal = ({
       setCpf(data.cpf || '')
       setCnpj(data.cnpj || '')
     }
+
+    if (data?.cpf !== '') {
+      setChecked('cpf')
+    } else if (data.cnpj !== '') {
+      setChecked('cnpj')
+    }
   }, [data])
 
   return (
-    <Modal visible={visible} onDismiss={onDismiss}>
-      <ScrollView showsVerticalScrollIndicator={true}>
+    <Modal
+      visible={visible}
+      onDismiss={onDismiss}
+      contentContainerStyle={{ flex: 1 }}
+    >
+      <ScrollView
+        showsVerticalScrollIndicator={true}
+        contentContainerStyle={{ flexGrow: 1, paddingBottom: 80 }}
+      >
         <Card style={styles.modal}>
           <Card.Content>
             <TextInput
@@ -100,7 +113,7 @@ const EditCostumerModal = ({
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <RadioButton
                   value="cpf"
-                  status={cpf?.length !== 0 ? 'checked' : 'unchecked'}
+                  status={checked === 'cpf' ? 'checked' : 'unchecked'}
                   onPress={() => setChecked('cpf')}
                 />
                 <Text style={{ marginLeft: 5 }}>CPF</Text>
@@ -114,13 +127,13 @@ const EditCostumerModal = ({
               >
                 <RadioButton
                   value="cnpj"
-                  status={cnpj?.length === 14 ? 'checked' : 'unchecked'}
+                  status={checked === 'cnpj' ? 'checked' : 'unchecked'}
                   onPress={() => setChecked('cnpj')}
                 />
                 <Text style={{ marginLeft: 5 }}>CNPJ</Text>
               </View>
             </View>
-            {cpf?.length !== 0 ? (
+            {checked === 'cpf' ? (
               <TextInput
                 key={10}
                 value={cpf}
@@ -245,7 +258,7 @@ const EditCostumerModal = ({
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <RadioButton
                   value="celphone"
-                  status={phone.length === 11 ? 'checked' : 'unchecked'}
+                  status={checked2 === 'celphone' ? 'checked' : 'unchecked'}
                   onPress={() => setChecked2('celphone')}
                 />
                 <Text style={{ marginLeft: 5 }}>Celular</Text>
@@ -259,7 +272,7 @@ const EditCostumerModal = ({
               >
                 <RadioButton
                   value="landline"
-                  status={phone.length === 10 ? 'checked' : 'unchecked'}
+                  status={checked2 === 'landline' ? 'checked' : 'unchecked'}
                   onPress={() => setChecked2('landline')}
                 />
                 <Text style={{ marginLeft: 5 }}>Telefone Fixo</Text>
@@ -271,7 +284,7 @@ const EditCostumerModal = ({
               label={'Telefone'}
               inputMode="tel"
               render={(props) =>
-                phone.length === 11 ? (
+                checked2 === 'celphone' ? (
                   <MaskedTextInput
                     {...props}
                     value={phone}

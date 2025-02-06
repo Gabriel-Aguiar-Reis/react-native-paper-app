@@ -72,8 +72,15 @@ const InvoiceModal = ({
     }
   ]
   return (
-    <Modal visible={visible} onDismiss={onDismiss}>
-      <ScrollView showsVerticalScrollIndicator={true}>
+    <Modal
+      visible={visible}
+      onDismiss={onDismiss}
+      contentContainerStyle={{ flex: 1 }}
+    >
+      <ScrollView
+        showsVerticalScrollIndicator={true}
+        contentContainerStyle={{ flexGrow: 1, paddingBottom: 80 }}
+      >
         <Card style={styles.modal}>
           <Card.Title title="Dados do Cliente" titleVariant="titleLarge" />
           <View
