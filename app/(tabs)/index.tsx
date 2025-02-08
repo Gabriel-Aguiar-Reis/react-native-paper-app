@@ -154,9 +154,9 @@ const TabsHome = () => {
           const line2 = 'Segue o resumo do seu pedido:\n\n'
           const breakline = '--------------------------------\n'
           const costumerData =
-            (selectedInvoice.cpf !== undefined &&
+            (selectedInvoice.cpf !== '' &&
               `NOME: ${selectedInvoice.name}\nCPF: ${selectedInvoice.cpf}\n`) ||
-            (selectedInvoice.cnpj !== undefined &&
+            (selectedInvoice.cnpj !== '' &&
               `NOME: ${selectedInvoice.name}\nCNPJ: ${selectedInvoice.cnpj}\n`) ||
             `NOME: ${selectedInvoice.name}\n`
           const products = textFragment
