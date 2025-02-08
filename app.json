@@ -14,14 +14,14 @@
       "infoPlist": {
         "ExpoLocalization_supportsRTL": true
       },
-      "bundleIdentifier": "com.fireextinguisherapp"
+      "bundleIdentifier": "com.apolloextintoresapp"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.fireextinguisherapp"
+      "package": "com.apolloextintoresapp"
     },
     "web": {
       "bundler": "metro",
