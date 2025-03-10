@@ -9,6 +9,7 @@ import IFilters from '@/lib/interfaces/Filters'
 import IInvoice from '@/lib/interfaces/Invoice'
 import IInvoiceContextProps from '@/lib/interfaces/InvoiceContextProps'
 import IInvoiceProduct from '@/lib/interfaces/InvoiceProduct'
+import ILicense from '@/lib/interfaces/License'
 import ILocation from '@/lib/interfaces/Location'
 import IProduct from '@/lib/interfaces/Product'
 import IProductContextProps from '@/lib/interfaces/ProductContextProps'
@@ -30,6 +31,7 @@ export {
   IInvoice,
   IInvoiceContextProps,
   IInvoiceProduct,
+  ILicense,
   ILocation,
   IProduct,
   IProductContextProps,

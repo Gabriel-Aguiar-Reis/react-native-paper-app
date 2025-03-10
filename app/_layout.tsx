@@ -8,13 +8,13 @@ import {
 } from '@react-navigation/native'
 import { useFonts } from 'expo-font'
 import { SplashScreen, Stack } from 'expo-router'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useColorScheme } from 'react-native'
 import { adaptNavigationTheme, PaperProvider } from 'react-native-paper'
 
 import { Setting } from '@/lib/types'
 import { Themes } from '@/lib/ui'
-import { SQLiteProvider } from 'expo-sqlite'
+import { SQLiteProvider, useSQLiteContext } from 'expo-sqlite'
 import { initializeDatabase } from '@/lib/services/storage/sqliteDBService'
 import { CostumerProvider } from '@/lib/context/CostumerContext'
 import { ProductProvider } from '@/lib/context/ProductContext'
@@ -22,6 +22,8 @@ import { InvoiceProvider } from '@/lib/context/InvoiceContext'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 export { ErrorBoundary } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
+import LicenseModal from '@/lib/ui/components/LicenseModal'
+import { getLicense } from '@/lib/services/storage/licenseService'
 
 export const unstable_settings = { initialRouteName: '(tabs)' }
 
@@ -48,7 +50,11 @@ const RootLayout = () => {
     return null
   }
 
-  return <RootLayoutNav />
+  return (
+    <SQLiteProvider databaseName="sqlite.db" onInit={initializeDatabase}>
+      <RootLayoutNav />
+    </SQLiteProvider>
+  )
 }
 
 const RootLayoutNav = () => {
@@ -79,6 +85,24 @@ const RootLayoutNav = () => {
     { name: 'invoice', title: 'Criar Nova Ordem de Visita' },
     { name: 'product', title: 'Criar Novo Produto' }
   ]
+
+  const [visible, setVisible] = useState(true)
+
+  const db = useSQLiteContext()
+
+  useEffect(() => {
+    const checkLicense = async () => {
+      console.log('check')
+      const today = new Date().toLocaleDateString('pt-BR')
+      const license = await getLicense({ db })
+      console.log(license)
+      if (license && today !== license.blockDate) {
+        setVisible(false)
+      }
+    }
+    checkLicense()
+  })
+
   return (
     <GestureHandlerRootView>
       <ThemeProvider
@@ -89,37 +113,34 @@ const RootLayoutNav = () => {
         }
       >
         <PaperProvider theme={theme}>
-          <SQLiteProvider databaseName="sqlite.db" onInit={initializeDatabase}>
-            <CostumerProvider>
-              <ProductProvider>
-                <InvoiceProvider>
-                  <StatusBar
-                    style={colorScheme === 'light' ? 'dark' : 'light'}
+          <CostumerProvider>
+            <ProductProvider>
+              <InvoiceProvider>
+                <StatusBar style={colorScheme === 'light' ? 'dark' : 'light'} />
+                <Stack
+                  screenOptions={{
+                    animation: 'slide_from_bottom'
+                  }}
+                >
+                  <Stack.Screen
+                    name="(tabs)"
+                    options={{ headerShown: false }}
                   />
-                  <Stack
-                    screenOptions={{
-                      animation: 'slide_from_bottom'
-                    }}
-                  >
+                  <Stack.Screen name="filter" options={{ title: 'Filtrar' }} />
+                  {createStack.map((stack) => (
                     <Stack.Screen
-                      name="(tabs)"
-                      options={{ headerShown: false }}
+                      name={`(create)/${stack.name}`}
+                      options={{ title: stack.title }}
                     />
-                    <Stack.Screen
-                      name="filter"
-                      options={{ title: 'Filtrar' }}
-                    />
-                    {createStack.map((stack) => (
-                      <Stack.Screen
-                        name={`(create)/${stack.name}`}
-                        options={{ title: stack.title }}
-                      />
-                    ))}
-                  </Stack>
-                </InvoiceProvider>
-              </ProductProvider>
-            </CostumerProvider>
-          </SQLiteProvider>
+                  ))}
+                </Stack>
+                <LicenseModal
+                  visible={visible}
+                  onClose={() => setVisible(false)}
+                />
+              </InvoiceProvider>
+            </ProductProvider>
+          </CostumerProvider>
         </PaperProvider>
       </ThemeProvider>
     </GestureHandlerRootView>
