@@ -68,8 +68,10 @@ const LicenseModal = ({
           <Text>
             Entre em contato com o administrador e forneça os dados abaixo.
           </Text>
-          <Text>Código único: {uniqueCode}</Text>
-          {blockDate && <Text>Data do bloqueio: {blockDate}</Text>}
+          <Text selectable={true}>Código único: {uniqueCode}</Text>
+          {blockDate && (
+            <Text selectable={true}>Data do bloqueio: {blockDate}</Text>
+          )}
           <TextInput
             error={licenseError}
             label={'Digite o código para liberar acesso'}
