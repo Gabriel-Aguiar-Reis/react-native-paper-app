@@ -1,6 +1,4 @@
-import { useCostumerContext } from '@/lib/context/CostumerContext'
 import { useInvoiceContext } from '@/lib/context/InvoiceContext'
-import { useProductContext } from '@/lib/context/ProductContext'
 import {
   IFilters,
   IInvoice,
@@ -81,6 +79,7 @@ const Filter = () => {
   const onConfirm2 = React.useCallback(
     ({ startDate, endDate }: { startDate: any; endDate: any }) => {
       setOpen2(false)
+      console.log('range2 Confirm2', startDate, endDate)
       setRange2({ startDate, endDate })
     },
     [setOpen2, setRange2]
@@ -183,13 +182,12 @@ const Filter = () => {
       costumerIds: checkedCostumer ? costumerIds : undefined,
       productIds: checkedProduct ? productIds : undefined,
       realizedIds: checkedRealized ? realizedIds : undefined,
-      startDateVisit: checkedRangeReturnDates ? range.startDate : undefined,
-      endDateVisit: checkedRangeReturnDates ? range.endDate : undefined,
+      startDateVisit: checkedRangeVisitDates ? range.startDate : undefined,
+      endDateVisit: checkedRangeVisitDates ? range.endDate : undefined,
       startDateReturn: checkedRangeReturnDates ? range2.startDate : undefined,
       endDateReturn: checkedRangeReturnDates ? range2.endDate : undefined,
       paidIds: checkedPaid ? paidIds : undefined
     }
-
     setIsLoadingFilter(true)
     filterInvoices(filters)
     router.push('/')
@@ -208,19 +206,19 @@ const Filter = () => {
       setProductIds(currentFilters.productIds || [])
       setCheckedRealized(!!currentFilters.realizedIds?.length)
       setRealizedIds(currentFilters.realizedIds || [])
-      setCheckedRangeReturnDates(
-        !!currentFilters.startDateReturn && !!currentFilters.endDateReturn
-      )
       setCheckedRangeVisitDates(
         !!currentFilters.startDateVisit && !!currentFilters.endDateVisit
       )
+      setCheckedRangeReturnDates(
+        !!currentFilters.startDateReturn && !!currentFilters.endDateReturn
+      )
       setRange({
-        startDate: currentFilters.startDateReturn || undefined,
-        endDate: currentFilters.endDateReturn || undefined
-      })
-      setRange2({
         startDate: currentFilters.startDateVisit || undefined,
         endDate: currentFilters.endDateVisit || undefined
+      })
+      setRange2({
+        startDate: currentFilters.startDateReturn || undefined,
+        endDate: currentFilters.endDateReturn || undefined
       })
       setCheckedPaid(!!currentFilters.paidIds?.length)
       setPaidIds(currentFilters.paidIds || [])
@@ -313,7 +311,7 @@ const Filter = () => {
           <Text>Data de Retorno</Text>
           <Button
             disabled={!checkedRangeReturnDates}
-            onPress={() => setOpen(true)}
+            onPress={() => setOpen2(true)}
             uppercase={false}
             mode="outlined"
           >

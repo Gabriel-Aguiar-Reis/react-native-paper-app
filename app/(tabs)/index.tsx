@@ -220,14 +220,6 @@ const TabsHome = () => {
     setSelectedInvoice(undefined)
   }
 
-  if (indexInvoices.length === 0) {
-    return (
-      <Surface style={styles.indexScreen}>
-        <Text>Não há ordens de visita para esta filtragem!</Text>
-      </Surface>
-    )
-  }
-
   const handleMessage = () => {
     const text =
       'Ol%C3%A1%2C%20tudo%20bem%3F%0A%0AAqui%20%C3%A9%20o%20Santos%2C%20da%20Santos%20Extintores%2C%20estou%20te%20enviando%20essa%20mensagem%20para%20lembrar%20que%20esse%20m%C3%AAs%20irei%20te%20atender%21'
@@ -255,6 +247,16 @@ const TabsHome = () => {
     }
     console.log(indexInvoices)
   }, [indexInvoices])
+
+  console.log('Renderizou')
+
+  // if (indexInvoices.length === 0) {
+  //   return (
+  //     <Surface style={styles.indexScreen}>
+  //       <Text>Não há ordens de visita para esta filtragem!</Text>
+  //     </Surface>
+  //   )
+  // }
 
   return (
     <Surface>
